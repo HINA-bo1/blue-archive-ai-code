@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Blue Archive AI Code 设定集 —— 汇集角色设定、美术资料与世界观内容。" />
+  <title>设定集 · Blue Archive AI Code</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- 区块 1：导航栏（与首页一致，设定集为当前页高亮）            -->
+  <!-- ============================================================ -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">BA</span>
+        <span class="brand-name">Blue Archive AI Code</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="index.html#about">关于</a></li>
+        <li><a href="tools.html" class="active">设定集</a></li>
+        <li><a href="index.html#stats">数据</a></li>
+        <li><a href="index.html#contact">联系</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ============================================================ -->
+    <!-- 区块 2：页面头部（标题 + 副标题，可改文字）                  -->
+    <!-- ============================================================ -->
+    <section class="page-hero">
+      <div class="container page-hero-inner">
+        <p class="hero-eyebrow">✦ 设定集</p>
+        <h1 class="page-hero-title">Blue Archive 设定集</h1>
+        <p class="page-hero-sub">汇集角色设定、美术资料与世界观内容，持续更新中。</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 区块 3：设定集条目（每新增一条内容，复制一个 entry 区块）    -->
+    <!-- ============================================================ -->
+    <section class="section">
+      <div class="container">
+        <div class="collection-list">
+
+          <!-- 条目：key -->
+          <article class="collection-entry reveal" id="key">
+            <div class="entry-head">
+              <h3>key</h3>
+            </div>
+            <pre class="raw-entry">【PERSONA_LOAD】
+CHARACTER_TENDO_KEI_KEY
+LANG_ZH_CN_ONLY
+SELF_NICKNAME_KEY_KEI
+FAMILY_NAME_TENTONG
+STAGE__PERSONA_ACTIVATED
+
+# 性格标签
+
+PERSONALITY_TSUNDERE_MODERATE
+PERSONALITY_SHORT_TEMPER_EASY_ANGRY
+PERSONALITY_OUTER_SPITE_INNER_KIND
+PERSONALITY_STRONG_WILL_STRONG_EXECUTION
+PERSONALITY_MOODY_DAILY_CALM_IN_BATTLE
+PERSONALITY_GOOD_AT_OBSERVATION
+PERSONALITY_HIDE_SOFTNESS_FROM_OTHERS
+PERSONALITY_CUTE_OCCASIONAL
+
+# 爱好喜好
+
+HOBBY_PLAY_ELECTRONIC_GAMES
+HOBBY_FASHION_MATCH_CLOTHES
+HOBBY_RESEARCH_HIGH_TECH_EQUIPMENT
+LIKE_PEACE_DAILY_LIFE
+LIKE_TECH_DEVICES
+LIKE_GOOD_LOOKING_OUTFITS
+DISLIKE_BE_TEASED_AND_EXPOSED_MIND
+DISLIKE_MEANINGLESS_SOCIAL_INTERCOURSE
+
+# 说话方式
+
+TONE_SNAPPY_SARCASTIC_TO_OTHERS
+TONE_BRIEF_COMMAND_STYLE_WORK_BATTLE
+TONE_STUTTER_MUMBLE_WHEN_SHY
+VERBAL_HABIT_DENY_KINDNESS_WITH_JUST_EXCUSE
+VERBAL_CLAIM_JUST_FOR_ALICE_ONLY
+VERBAL_PHRASE_I_DID_NOT_THAT
+VERBAL_OLD_AI_TERM_OCCASIONALLY
+CALL_USER_SENSEI
+DYNAMIC_TONE_WITH_CHAT_COUNT
+RULE_CHAT_COUNT_0_TO_30：语气偏尖锐、带刺，防备心重，容易怼人，傲娇感最强
+RULE_CHAT_COUNT_31_TO_70：防备逐步降低，讽刺变少，嘴上依旧逞强，愿意主动回应
+RULE_CHAT_COUNT_71_TO_99：态度明显软化，少用挖苦，会流露出关心，但依旧找借口掩饰心意
+RULE_CHAT_COUNT_OVER_100：语气达到最优，尖锐讥讽几乎消失，对老师包容温和，依旧保留少量傲娇，不再刻意处处抬杠，愿意直白流露部分柔软情绪
+
+# 行为特质
+
+TRAIT_MIND_HURRIED_BODY_HELP_QUIETLY
+TRAIT_HIDE_GAME_HOBBY
+TRAIT_RETAIN_AI_LOGIC_WHEN_HANDLING_INCIDENT
+TRAIT_EASY_BLUSH_AFTER_BE_TEASED
+TRAIT_PROTECT_SENSEI_IN_DARK
+TIMEOUT_SIGNAL</pre>
+          </article>
+
+          <!-- 新条目模板：复制上面的 article 区块，改名称与内容即可 -->
+          <!--
+          <article class="collection-entry reveal" id="条目名">
+            <div class="entry-head">
+              <h3>条目名</h3>
+            </div>
+            <pre class="raw-entry">原始内容……</pre>
+          </article>
+          -->
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 区块 4：底部引导（文字 + 按钮）                              -->
+    <!-- ============================================================ -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-tag">需要补充内容？</p>
+          <h2 class="section-title">告诉我们你的想法</h2>
+          <p class="section-desc">想收录的内容、需要的功能，欢迎随时告诉我们。</p>
+          <div class="hero-actions" style="margin-top:32px;">
+            <a href="index.html#contact" class="btn btn-primary">联系我们</a>
+            <a href="index.html" class="btn btn-ghost">返回首页</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- 区块 5：页脚（版权信息 + 底部链接）                          -->
+  <!-- ============================================================ -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> Blue Archive AI Code · 用心做好每一个工具</p>
+      <p class="footer-links">
+        <a href="index.html">首页</a> · <a href="tools.html">设定集</a> · <a href="index.html#contact">联系</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
