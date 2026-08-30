@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Blue Archive AI Code —— 面向蔚蓝档案玩家的 AI 工具与代码方案。" />
+  <title>Blue Archive AI Code</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- 区块 1：导航栏（品牌名 + 菜单，可修改链接与名称）           -->
+  <!-- ============================================================ -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="#home" class="brand">
+        <span class="brand-mark">BA</span>
+        <span class="brand-name">Blue Archive AI Code</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home">首页</a></li>
+        <li><a href="#about">关于</a></li>
+        <li><a href="#features">工具</a></li>
+        <li><a href="#stats">数据</a></li>
+        <li><a href="#contact">联系</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ============================================================ -->
+    <!-- 区块 2：主视觉 Hero（大标题 + 简介 + 按钮）                  -->
+    <!-- 提示：替换这里的文字即可；按钮可改成你想要的跳转地址       -->
+    <!-- ============================================================ -->
+    <section id="home" class="hero">
+      <div class="hero-glow"></div>
+      <div class="container hero-inner">
+        <p class="hero-eyebrow">✦ AI × Blue Archive</p>
+        <h1 class="hero-title">用 AI 与代码<br /><span class="gradient-text">让游戏体验更轻松</span></h1>
+        <p class="hero-sub">为 Blue Archive（蔚蓝档案）玩家打造的 AI 辅助工具集：情报速查、阵容推荐、数据计算与开源代码方案。</p>
+        <div class="hero-actions">
+          <a href="tools.html" class="btn btn-primary">获取工具</a>
+          <a href="#features" class="btn btn-ghost">浏览功能</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 区块 3：关于（三张卡片，可放文字/图标/图片）                -->
+    <!-- ============================================================ -->
+    <section id="about" class="section">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-tag">关于我们</p>
+          <h2 class="section-title">为玩家而生，用技术说话</h2>
+          <p class="section-desc">我们是一群热爱 Blue Archive 的开发者，把 AI 与开源代码变成每个玩家都能使用的工具。</p>
+        </div>
+        <div class="about-grid">
+          <div class="about-card reveal">
+            <h3>情报速查</h3>
+            <p>AI 汇总角色、装备、活动情报，随时随地问答，不再四处翻攻略。</p>
+          </div>
+          <div class="about-card reveal">
+            <h3>阵容推荐</h3>
+            <p>基于关卡数据与角色养成情况，智能生成总力战与竞技场阵容。</p>
+          </div>
+          <div class="about-card reveal">
+            <h3>开源代码</h3>
+            <p>核心工具全部开源，文档清晰，欢迎一起贡献与二次开发。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 区块 4：工具预览（四张卡片，可增删卡片）                    -->
+    <!-- ============================================================ -->
+    <section id="features" class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-tag">核心功能</p>
+          <h2 class="section-title">一站式 AI 工具集</h2>
+          <p class="section-desc">从情报到计算，从脚本到社区，覆盖玩家的日常所需。</p>
+        </div>
+        <div class="features-grid">
+          <article class="feature-card reveal">
+            <div class="feature-icon">🤖</div>
+            <h3>AI 问答助手</h3>
+            <p>关于 Blue Archive 的任何问题，都能得到即时、准确的回答。</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">📊</div>
+            <h3>养成计算器</h3>
+            <p>计算升级、专武、技能素材需求，规划养成一目了然。</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">⚔️</div>
+            <h3>阵容推荐</h3>
+            <p>按关卡与敌人自动匹配最优队伍与站位思路。</p>
+          </article>
+          <article class="feature-card reveal">
+            <div class="feature-icon">💻</div>
+            <h3>开源 SDK</h3>
+            <p>提供简洁的 API 与示例代码，轻松接入你的项目。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 区块 5：数据统计（四个数字，可修改数字与说明）              -->
+    <!-- ============================================================ -->
+    <section id="stats" class="section">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat reveal">
+            <span class="stat-num" data-target="1200">0</span><span class="stat-plus">+</span>
+            <p>收录角色与装备</p>
+          </div>
+          <div class="stat reveal">
+            <span class="stat-num" data-target="500">0</span><span class="stat-plus">+</span>
+            <p>关卡攻略数据</p>
+          </div>
+          <div class="stat reveal">
+            <span class="stat-num" data-target="99">0</span><span class="stat-plus">%</span>
+            <p>开源代码覆盖率</p>
+          </div>
+          <div class="stat reveal">
+            <span class="stat-num" data-target="10">0</span><span class="stat-plus">k+</span>
+            <p>社区活跃玩家</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 区块 6：联系表单（前端演示，可接入后端）                    -->
+    <!-- ============================================================ -->
+    <section id="contact" class="section section-alt">
+      <div class="container">
+        <div class="contact-card reveal">
+          <div class="section-head">
+            <p class="section-tag">联系我们</p>
+            <h2 class="section-title">加入我们，一起构建</h2>
+            <p class="section-desc">有建议、想法或想要的功能？告诉我们，我们会在一个工作日内回复。</p>
+          </div>
+          <form class="contact-form" id="contactForm">
+            <div class="form-row">
+              <input type="text" name="name" placeholder="你的称呼" required />
+              <input type="email" name="email" placeholder="邮箱地址" required />
+            </div>
+            <textarea name="message" rows="4" placeholder="你的建议或需求" required></textarea>
+            <button type="submit" class="btn btn-primary btn-block">发送消息</button>
+            <p class="form-note" id="formNote" hidden>✓ 已收到，我们会尽快联系你！</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- 区块 7：页脚（版权信息 + 底部链接）                          -->
+  <!-- ============================================================ -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> Blue Archive AI Code · 用心做好每一个工具</p>
+      <p class="footer-links">
+        <a href="#home">首页</a> · <a href="#about">关于</a> · <a href="#contact">联系</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
