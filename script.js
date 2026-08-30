@@ -1,5 +1,5 @@
 /* 密码锁屏 */
-const ACCESS_KEY = "666";
+const ACCESS_KEY = "Hina";
 const SESSION_FLAG = "ba_access";
 
 (function lockInit() {
