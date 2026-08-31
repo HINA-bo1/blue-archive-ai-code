@@ -98,18 +98,41 @@ const statObserver = new IntersectionObserver(
 
 document.querySelectorAll(".stat-num").forEach((el) => statObserver.observe(el));
 
-/* 联系表单（纯前端演示，可接入后端或表单服务） */
+/* 联系表单：提交到 FormSubmit，真实发送到指定邮箱 */
 const form = document.getElementById("contactForm");
 const formNote = document.getElementById("formNote");
 
 if (form && formNote) {
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    form.reset();
+    const payload = {};
+    new FormData(form).forEach((value, key) => {
+      payload[key] = value;
+    });
     formNote.hidden = false;
+    formNote.style.color = "#16a34a";
+    formNote.textContent = "正在发送……";
+    try {
+      const res = await fetch("https://formsubmit.co/ajax/wsh260622@outlook.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (json.success === "true" || res.ok) {
+        formNote.textContent = "✓ 消息已发送，我们会尽快回复你！";
+        form.reset();
+      } else {
+        formNote.style.color = "#dc2626";
+        formNote.textContent = "发送失败，请稍后再试。";
+      }
+    } catch (err) {
+      formNote.style.color = "#dc2626";
+      formNote.textContent = "网络异常，发送失败，请稍后再试。";
+    }
     setTimeout(() => {
       formNote.hidden = true;
-    }, 4000);
+    }, 6000);
   });
 }
 
