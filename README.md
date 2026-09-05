@@ -17,6 +17,7 @@ Add-Content -Path "outputs/website/styles.css" -Value $add -Encoding UTF8
 
 - `index.html` — 首页（导航、主视觉、关于、功能、数据、联系表单）
 - `tools.html` — 设定集页面（当前展示"设定集"单入口）
+- `interaction.html` — 交互模型页面（与普通模型、好感度模型并列的独立板块）
 - `styles.css` — 全部样式与配色
 - `script.js` — 交互逻辑（菜单、滚动动画、数字动画、表单演示）
 

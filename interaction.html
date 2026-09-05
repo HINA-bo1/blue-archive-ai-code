@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Blue Archive AI Code 交互模型 —— 汇集支持即时对话与多轮互动的角色模型。" />
+  <title>交互模型 · Blue Archive AI Code</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27><rect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230b7fe8%27/><text x=%2732%27 y=%2743%27 font-size=%2726%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27>BA</text></svg>" />
+</head>
+<body>
+  <!-- 密码锁屏 -->
+  <div class="lock-screen" id="lockScreen">
+    <div class="lock-card">
+      <div class="lock-icon">🔒</div>
+      <h2>Blue Archive AI Code</h2>
+      <p>请输入访问密码</p>
+      <input type="password" class="lock-input" id="lockPassword" placeholder="密码" autocomplete="off" />
+      <p class="lock-error" id="lockError"></p>
+      <button type="button" class="btn btn-primary btn-block" id="lockEnter">进入网站</button>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 区块 1：导航栏（与首页一致，设定集为当前页高亮）            -->
+  <!-- ============================================================ -->
+  <header class="site-header">
+    <nav class="nav container">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">BA</span>
+        <span class="brand-name">Blue Archive AI Code</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="index.html#about">关于</a></li>
+        <li><a href="tools.html">设定集</a></li>
+        <li><a href="index.html#stats">数据</a></li>
+        <li><a href="index.html#contact">联系</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ============================================================ -->
+    <!-- 区块 2：页面头部（标题 + 副标题，可改文字）                  -->
+    <!-- ============================================================ -->
+    <section class="page-hero">
+      <div class="container page-hero-inner">
+        <p class="hero-eyebrow">✦ 交互模型</p>
+        <h1 class="page-hero-title">Blue Archive 交互模型</h1>
+        <p class="page-hero-sub">汇集支持自由对话、多轮即时互动的角色模型，与普通模型、好感度模型并列开放，持续更新中。</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 区块 3：交互模型条目（每新增一条内容，复制一个 entry 区块）    -->
+    <!-- ============================================================ -->
+    <section class="section">
+      <div class="container">
+        <div class="collection-list">
+<article class="collection-entry reveal">
+            <div class="entry-head">
+              <h3>交互模型筹备中</h3>
+              <span class="entry-meta">独立板块 · 即将开放收录</span>
+            </div>
+            <p style="margin-top:14px;">这里用于收录支持自由对话与多轮即时互动的角色模型（例如带记忆、可实时追问的交互版本）。内容筹备中，可复制下方注释模板新增条目。</p>
+          </article>
+          <!-- 新条目模板：复制上面的 article 区块，改名称与内容即可 -->
+          <!--
+          <article class="collection-entry reveal" id="条目名">
+            <div class="entry-head">
+              <h3>条目名</h3>
+            </div>
+            <pre class="raw-entry">原始内容……</pre>
+          </article>
+          -->
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 区块 4：底部引导（文字 + 按钮）                              -->
+    <!-- ============================================================ -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-tag">需要补充内容？</p>
+          <h2 class="section-title">告诉我们你的想法</h2>
+          <p class="section-desc">想收录的内容、需要的功能，欢迎随时告诉我们。</p>
+          <div class="hero-actions" style="margin-top:32px;">
+            <a href="index.html#contact" class="btn btn-primary">联系我们</a>
+            <a href="index.html" class="btn btn-ghost">返回首页</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- 区块 5：页脚（版权信息 + 底部链接）                          -->
+  <!-- ============================================================ -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> Blue Archive AI Code · 用心做好每一个工具</p>
+      <p>作者MFC（抖音）</p>
+      <p class="footer-links">
+        <a href="index.html">首页</a> · <a href="tools.html">设定集</a> · <a href="index.html#contact">联系</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
