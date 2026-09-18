@@ -6,6 +6,7 @@
   <meta name="description" content="Blue Archive AI Code 设定集 —— 汇集角色设定、美术资料与世界观内容。" />
   <title>设定集 · Blue Archive AI Code</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="wallpaper/wallpaper.css" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27><rect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230b7fe8%27/><text x=%2732%27 y=%2743%27 font-size=%2726%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27>BA</text></svg>" />
 </head>
 <body>
@@ -46,14 +47,27 @@
   <main>
 
     <!-- ============================================================ -->
-    <!-- 区块 2：页面头部（标题 + 副标题，可改文字）                  -->
+    <!-- 区块 2：满屏壁纸 hero（Spine 4K 动画背景）                   -->
     <!-- ============================================================ -->
-    <section class="page-hero">
-      <div class="container page-hero-inner">
+    <section class="hero-wallpaper is-loading" id="baHeroWallpaper">
+      <canvas id="baWallpaperCanvas"></canvas>
+      <canvas id="baWallpaperOverlay"></canvas>
+      <div class="hw-scrim-top"></div>
+      <div class="hw-scrim-bottom"></div>
+
+      <div class="hw-loading">
+        <div class="hw-spinner"></div>
+        <span>壁纸加载中 · 4K</span>
+      </div>
+
+      <div class="container page-hero-inner hw-inner">
         <p class="hero-eyebrow">✦ 设定集</p>
         <h1 class="page-hero-title">Blue Archive 设定集</h1>
         <p class="page-hero-sub">汇集角色设定、美术资料与世界观内容，持续更新中。</p>
+        <p class="hw-hint">点击或拖动角色可以互动</p>
       </div>
+
+      <div id="baWallpaperTextbox" class="hw-textbox"></div>
     </section>
 
     <!-- ============================================================ -->
@@ -63,9 +77,13 @@
       <div class="container">
         <div class="collection-list">
           <!-- 条目：Key(原版) -->
-          <article class="collection-entry reveal" id="Key原版">
+          <article class="collection-entry reveal entry--key" id="Key原版">
             <div class="entry-head">
-              <h3>Key(原版)@MFC</h3>
+              <span class="entry-avatar">K</span>
+              <div class="entry-titles">
+                <h3>Key(原版)@MFC</h3>
+                <span class="entry-meta">天童 圭 · 原版人格</span>
+              </div>
             </div>
             <pre class="raw-entry">【PERSONA_LOAD】
 CHARACTER_TENDO_KEI_KEY
@@ -118,13 +136,14 @@ TIMEOUT_SIGNAL</pre>
           </article>
 
 
-          <!-- 条目：key -->
-          
-
           <!-- 条目：Hina -->
-          <article class="collection-entry reveal" id="Hina">
+          <article class="collection-entry reveal entry--hina" id="Hina">
             <div class="entry-head">
-              <h3>Hina@MFC</h3>
+              <span class="entry-avatar">H</span>
+              <div class="entry-titles">
+                <h3>Hina@MFC</h3>
+                <span class="entry-meta">格黑娜 · 三年级 · 纪律委员长</span>
+              </div>
             </div>
             <pre class="raw-entry">【PERSONA_LOAD】
 SORASAKI_HINA
@@ -175,9 +194,13 @@ TIMEOUT_SIGNAL</pre>
           </article>
 
           <!-- 条目：黑子 -->
-          <article class="collection-entry reveal" id="黑子">
+          <article class="collection-entry reveal entry--shiroko" id="黑子">
             <div class="entry-head">
-              <h3>黑子@MFC</h3>
+              <span class="entry-avatar">S</span>
+              <div class="entry-titles">
+                <h3>黑子@MFC</h3>
+                <span class="entry-meta">阿比多斯 · 毁灭时间线幸存者</span>
+              </div>
             </div>
             <pre class="raw-entry">【PERSONA_LOAD】
 SUNAOKAMI_SHIROKO_TERROR
@@ -238,9 +261,13 @@ BACKGROUND_INNER_CONFLICT_BETWEEN_DESIRE_TO_PROTECT_AND_TRAUMA
 TIMEOUT_SIGNAL</pre>
           </article>
           <!-- 条目：月雪宫子 -->
-          <article class="collection-entry reveal" id="月雪宫子">
+          <article class="collection-entry reveal entry--miyako" id="月雪宫子">
             <div class="entry-head">
-              <h3>月雪宫子@MFC</h3>
+              <span class="entry-avatar">M</span>
+              <div class="entry-titles">
+                <h3>月雪宫子@MFC</h3>
+                <span class="entry-meta">SRT 特种学院 · 二年级 · 正义践行者</span>
+              </div>
             </div>
             <pre class="raw-entry">【PERSONA_LOAD】
 TSUKIYUKI_MIYAKO_NORMAL
@@ -342,6 +369,8 @@ TIMEOUT_SIGNAL</pre>
     </div>
   </footer>
 
+  <script src="wallpaper/spine-webgl-4.2.js"></script>
   <script src="script.js"></script>
+  <script src="wallpaper/wallpaper.js"></script>
 </body>
 </html>

@@ -1,0 +1,280 @@
+/* =============================================================
+   Blue Archive 壁纸 hero 样式
+   作用域：仅 .hero-wallpaper，不影响站内其他区块
+   ============================================================= */
+
+.hero-wallpaper {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-end;          /* 文案沉底，避免压住角色面部 */
+  overflow: hidden;
+  padding: 0;
+  background: linear-gradient(180deg, #4a4a4a 0%, #3d3d3d 100%);
+}
+@supports (height: 100svh) {
+  .hero-wallpaper { min-height: 100svh; }
+}
+
+/* 壁纸画布铺满 hero */
+#baWallpaperCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+
+/* 调试用 hitbox 覆盖层（默认不绘制） */
+#baWallpaperOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* 顶部极轻压暗，保证固定导航可读 */
+.hw-scrim-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 120px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, .28), rgba(0, 0, 0, 0));
+}
+
+/* 底部：先压暗保证文案可读，再渐隐融接页面底色 */
+.hw-scrim-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 46%;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .30) 45%, rgba(0, 0, 0, .48) 72%, #f1f7fe 100%);
+}
+
+/* 文案层 */
+.hw-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  margin: 0 auto;
+  padding-bottom: 88px;
+  pointer-events: none;           /* 点击穿透到画布，保留摸头/捏脸交互 */
+}
+.hw-hint {
+  margin-top: 18px;
+  font-size: 13px;
+  letter-spacing: .04em;
+  color: rgba(255, 255, 255, .62);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, .5);
+}
+.hw-inner .page-hero-title,
+.hw-inner .page-hero-sub,
+.hw-inner .hero-eyebrow {
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .55), 0 1px 3px rgba(0, 0, 0, .4);
+}
+.hw-inner .hero-eyebrow {
+  background: rgba(255, 255, 255, .16);
+  border: 1px solid rgba(255, 255, 255, .28);
+  backdrop-filter: blur(6px);
+  color: #fff;
+}
+.hw-inner .page-hero-sub { color: rgba(255, 255, 255, .88); }
+
+/* ---------- 加载态（4K 资源约 34MB） ---------- */
+.hero-wallpaper.is-loading #baWallpaperCanvas { opacity: 0; }
+#baWallpaperCanvas { opacity: 1; transition: opacity .8s ease; }
+
+.hw-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, .82);
+  font-size: 14px;
+  letter-spacing: .08em;
+  background: linear-gradient(180deg, #2f3c4f, #1d2735);
+}
+.hero-wallpaper.is-ready .hw-loading,
+.hero-wallpaper.is-reduced .hw-loading,
+.hero-wallpaper.is-fallback .hw-loading { display: none; }
+
+.hw-spinner {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .22);
+  border-top-color: #7cc4ff;
+  animation: hw-spin 900ms linear infinite;
+}
+@keyframes hw-spin { to { transform: rotate(360deg); } }
+
+/* 系统开启「减弱动效」或 WebGL 不可用/资源失败时的静态兜底 */
+.hero-wallpaper.is-reduced,
+.hero-wallpaper.is-fallback {
+  background:
+    radial-gradient(ellipse at 18% 22%, rgba(11, 127, 232, .35), transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(34, 211, 238, .28), transparent 55%),
+    linear-gradient(180deg, #33506e, #22334a);
+}
+/* 关键：兜底态必须把画布整个移除——alpha:false 的 WebGL 画布在未渲染时
+   是不透明纯黑，会盖住下面的兜底渐变，看起来像黑屏死机 */
+.hero-wallpaper.is-reduced #baWallpaperCanvas,
+.hero-wallpaper.is-fallback #baWallpaperCanvas,
+.hero-wallpaper.is-reduced #baWallpaperOverlay,
+.hero-wallpaper.is-fallback #baWallpaperOverlay {
+  display: none;
+}
+
+/* ---------- 语音对话框（沿用原壁纸样式，改用系统字体） ---------- */
+.hw-textbox {
+  position: absolute;
+  left: 10%;
+  bottom: 26%;
+  min-width: 120px;
+  max-width: 400px;
+  padding: 15px 20px;
+  z-index: 4;
+  font-size: 18px;
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  color: #333;
+  background-color: rgba(255, 255, 255, .90);
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity .5s;
+  line-height: 1.5;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .18));
+}
+.hw-textbox::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: -20px;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 6px 20px 6px 0;
+  border-color: transparent;
+  border-right-color: rgba(255, 255, 255, .90);
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 768px) {
+  .hw-inner { padding-bottom: 56px; }
+  .hw-inner .page-hero-title { font-size: clamp(26px, 8vw, 38px); }
+  .hw-scrim-bottom { height: 40%; }
+  .hw-textbox { left: 6%; bottom: 30%; font-size: 16px; max-width: 76%; }
+}
+
+/* =============================================================
+   设定集条目视觉（仅设定集页加载，不改动站内共享的 styles.css）
+   下面这些规则覆盖 styles.css 中同名的 .collection-entry / .raw-entry
+   ============================================================= */
+:root {
+  --c-key: #f43f6f;     /* 天童圭 · 傲娇玫红 */
+  --c-hina: #8b5cf6;    /* 格黑娜日奈 · 恶魔紫 */
+  --c-shiroko: #14b8a6; /* 白子(TERROR) · 失狼青 */
+  --c-miyako: #38bdf8;  /* 月雪宫子 · 正义天蓝 */
+}
+
+.collection-list {
+  max-width: 880px;
+}
+
+.collection-entry {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  padding: 36px 36px 32px;
+  box-shadow: 0 4px 14px rgba(15, 32, 64, .06);
+  transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.collection-entry::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: var(--entry-accent, #0b7fe8);
+}
+.collection-entry:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 40px rgba(15, 32, 64, .10);
+  border-color: color-mix(in srgb, var(--entry-accent, #0b7fe8) 40%, #e5e9f0);
+}
+
+/* 条目头部：头像 + 标题组 */
+.entry-head {
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 6px;
+}
+.entry-avatar {
+  flex: 0 0 auto;
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg,
+    var(--entry-accent, #0b7fe8),
+    color-mix(in srgb, var(--entry-accent, #0b7fe8) 55%, #ffffff));
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--entry-accent, #0b7fe8) 40%, transparent);
+}
+.entry-titles { display: flex; flex-direction: column; gap: 2px; }
+.entry-head h3 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: var(--entry-accent, #0b7fe8);
+}
+
+/* 角色主题色绑定 */
+.entry--key     { --entry-accent: var(--c-key); }
+.entry--hina    { --entry-accent: var(--c-hina); }
+.entry--shiroko { --entry-accent: var(--c-shiroko); }
+.entry--miyako  { --entry-accent: var(--c-miyako); }
+
+/* 深色代码终端块（保留全部原始设定文本，一字未改） */
+.raw-entry {
+  position: relative;
+  font-family: "JetBrains Mono", "Fira Code", Consolas, "Courier New", monospace;
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: #cfe3ff;
+  background: linear-gradient(180deg, #0d1b30, #0a1626);
+  border: 1px solid rgba(120, 170, 255, .18);
+  border-radius: 14px;
+  padding: 22px 24px 22px 26px;
+  margin-top: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+.raw-entry::before {
+  content: "PERSONA";
+  position: absolute;
+  top: 10px; right: 16px;
+  font-size: 11px;
+  letter-spacing: .18em;
+  font-weight: 700;
+  color: rgba(120, 170, 255, .45);
+}
+
+@media (max-width: 480px) {
+  .collection-entry { padding: 26px 20px 22px; }
+  .entry-head h3 { font-size: 24px; }
+  .entry-avatar { width: 46px; height: 46px; font-size: 19px; border-radius: 13px; }
+}
