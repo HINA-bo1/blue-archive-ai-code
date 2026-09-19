@@ -6,9 +6,12 @@
   <meta name="description" content="Blue Archive AI Code —— 面向蔚蓝档案玩家的 AI 工具与代码方案。" />
   <title>Blue Archive AI Code</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="wallpaper/wallpaper.css" />
+  <link rel="stylesheet" href="home-scene.css?v=20260919f" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27><rect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230b7fe8%27/><text x=%2732%27 y=%2743%27 font-size=%2726%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27>BA</text></svg>" />
 </head>
 <body>
+
   <!-- 密码锁屏 -->
   <div class="lock-screen" id="lockScreen">
     <div class="lock-card">
@@ -21,12 +24,10 @@
     </div>
   </div>
 
-  <!-- ============================================================ -->
-  <!-- 区块 1：导航栏（品牌名 + 菜单，可修改链接与名称）           -->
-  <!-- ============================================================ -->
+  <!-- 导航栏（首页沉浸版：链接改为滚动到对应场景） -->
   <header class="site-header">
     <nav class="nav container">
-      <a href="#home" class="brand">
+      <a href="index.html" class="brand">
         <span class="brand-mark">BA</span>
         <span class="brand-name">Blue Archive AI Code</span>
       </a>
@@ -34,164 +35,165 @@
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#home">首页</a></li>
-        <li><a href="#about">关于</a></li>
-        <li><a href="#features">工具</a></li>
-        <li><a href="#stats">数据</a></li>
-        <li><a href="#contact">联系</a></li>
+        <li><a href="#" data-goto="0">首页</a></li>
+        <li><a href="#" data-goto="0.70">设定集</a></li>
+        <li><a href="#" data-goto="0.79">好感度</a></li>
+        <li><a href="#" data-goto="0.88">交互</a></li>
+        <li><a href="#" data-goto="0.97">联系</a></li>
       </ul>
     </nav>
   </header>
 
-  <main>
+  <!-- ============================================================
+       滚动叙事舞台：520vh 滚动容器 + sticky 100vh 视口
+       ============================================================ -->
+  <div class="ba-scroll" id="baScroll">
+    <div class="ba-stage" id="baStage">
 
-    <!-- ============================================================ -->
-    <!-- 区块 2：主视觉 Hero（大标题 + 简介 + 按钮）                  -->
-    <!-- 提示：替换这里的文字即可；按钮可改成你想要的跳转地址       -->
-    <!-- ============================================================ -->
-    <section id="home" class="hero">
-      <div class="hero-glow"></div>
-      <div class="container hero-inner">
-        <p class="hero-eyebrow">✦ AI × Blue Archive</p>
-        <h1 class="hero-title">用 AI 与代码<br /><span class="gradient-text">让游戏体验更轻松</span></h1>
-        <p class="hero-sub">为 Blue Archive（蔚蓝档案）玩家打造的 AI 辅助工具集：情报速查、阵容推荐、数据计算与开源代码方案。</p>
-        <div class="hero-actions">
-          <a href="tools.html" class="btn btn-primary">普通模型</a>
-          <a href="affection.html" class="btn btn-ghost">好感度模型</a>
-          <a href="interaction.html" class="btn btn-ghost">交互模型</a>
+      <!-- 图层 1：世界背景（还原工坊壁纸 3032469660「一切奇迹的始发点」场景） -->
+      <div class="ly-world" id="lyWorld">
+        <div class="w-sky"></div>
+        <div class="w-water"></div>
+        <div class="w-shimmer"></div>
+        <div class="w-glow"></div>
+        <div class="w-mountain"></div>
+        <img class="w-president" src="assets/home/president-body.png" alt="" />
+        <img class="w-president-ref" src="assets/home/president-body.png" alt="" />
+        <div class="w-meteors" aria-hidden="true">
+          <i class="meteor m1"></i>
+          <i class="meteor m2"></i>
+          <i class="meteor m3"></i>
+        </div>
+        <div class="w-shade"></div>
+      </div>
+
+      <!-- 图层 2.5：弧形卡滑块（Scene 2） -->
+      <div class="arc-wrap" id="arcWrap"></div>
+
+      <!-- 图层 2：底部雾气（Scene 2 柔化过渡，跟随视差） -->
+      <div class="ly-clouds" id="lyClouds">
+        <svg viewBox="0 0 1600 220" preserveAspectRatio="none" aria-hidden="true">
+          <g fill="rgba(214,196,246,.22)">
+            <ellipse cx="180" cy="170" rx="260" ry="70"/>
+            <ellipse cx="520" cy="190" rx="300" ry="62"/>
+            <ellipse cx="900" cy="176" rx="280" ry="74"/>
+            <ellipse cx="1320" cy="192" rx="320" ry="66"/>
+          </g>
+          <g fill="rgba(248,232,252,.3)">
+            <ellipse cx="320" cy="204" rx="240" ry="52"/>
+            <ellipse cx="760" cy="212" rx="260" ry="48"/>
+            <ellipse cx="1180" cy="206" rx="250" ry="50"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- 图层：Spine 壁纸（2K，Scene 1 主视觉，保留交互） -->
+      <section class="hero-wallpaper is-loading" id="baHeroWallpaper">
+        <canvas id="baWallpaperCanvas"></canvas>
+        <canvas id="baWallpaperOverlay"></canvas>
+        <div class="hw-scrim-top"></div>
+        <div class="hw-scrim-bottom"></div>
+        <div class="hw-loading"><div class="hw-spinner"></div><span>壁纸加载中</span></div>
+        <div id="baWallpaperTextbox" class="hw-textbox"></div>
+      </section>
+
+      <!-- 图层 3：穿越门（门芯透出那片天空 + 十字星光） -->
+      <div class="ly-portal" id="lyPortal">
+        <div class="portal-ring">
+          <img class="portal-star" src="assets/home/star04.png" alt="" />
+          <span class="portal-glyph">SCHALE</span>
         </div>
       </div>
-    </section>
 
-    <!-- ============================================================ -->
-    <!-- 区块 3：关于（三张卡片，可放文字/图标/图片）                -->
-    <!-- ============================================================ -->
-    <section id="about" class="section">
-      <div class="container">
-        <div class="section-head">
-          <p class="section-tag">关于我们</p>
-          <h2 class="section-title">为玩家而生，用技术说话</h2>
-          <p class="section-desc">我们是一群热爱 Blue Archive 的开发者，把 AI 与开源代码变成每个玩家都能使用的工具。</p>
+      <!-- 图层 3.5：底部渐隐 -->
+      <div class="ly-fade-bottom"></div>
+
+      <!-- 图层 4：左右幕布 -->
+      <div class="ly-curtain ly-curtain-l" id="lyCurtainL"></div>
+      <div class="ly-curtain ly-curtain-r" id="lyCurtainR"></div>
+
+      <!-- 顶部渐隐 -->
+      <div class="ly-fade-top"></div>
+
+      <!-- Scene 1 UI（文案与小卡已按需求移除，仅保留滚动提示） -->
+      <div class="scene1" id="scene1">
+        <div class="scene1-cards is-hidden">
+          <div class="s1-card fade-in" style="--c1:#4ea8ff;--c2:#7fe3ff">
+            <h4>情报速查</h4><p>AI 汇总角色、装备、活动情报，随时随地问答。</p>
+          </div>
+          <div class="s1-card fade-in" style="--c1:#f6a8c8;--c2:#ffd0e2">
+            <h4>阵容推荐</h4><p>基于关卡数据智能生成总力战与竞技场阵容。</p>
+          </div>
+          <div class="s1-card fade-in" style="--c1:#a99bf5;--c2:#d4ccff">
+            <h4>开源代码</h4><p>核心工具全部开源，文档清晰，欢迎二次开发。</p>
+          </div>
         </div>
-        <div class="about-grid">
-          <div class="about-card reveal">
-            <h3>情报速查</h3>
-            <p>AI 汇总角色、装备、活动情报，随时随地问答，不再四处翻攻略。</p>
-          </div>
-          <div class="about-card reveal">
-            <h3>阵容推荐</h3>
-            <p>基于关卡数据与角色养成情况，智能生成总力战与竞技场阵容。</p>
-          </div>
-          <div class="about-card reveal">
-            <h3>开源代码</h3>
-            <p>核心工具全部开源，文档清晰，欢迎一起贡献与二次开发。</p>
-          </div>
+
+        <div class="scene-cue fade-in">
+          <span>DESCEND</span>
+          <i>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </i>
         </div>
       </div>
-    </section>
 
-    <!-- ============================================================ -->
-    <!-- 区块 4：工具预览（四张卡片，可增删卡片）                    -->
-    <!-- ============================================================ -->
-    <section id="features" class="section section-alt">
-      <div class="container">
-        <div class="section-head">
-          <p class="section-tag">核心功能</p>
-          <h2 class="section-title">一站式 AI 工具集</h2>
-          <p class="section-desc">从情报到计算，从脚本到社区，覆盖玩家的日常所需。</p>
-        </div>
-        <div class="features-grid">
-          <article class="feature-card reveal">
-            <div class="feature-icon">🤖</div>
-            <h3>AI 问答助手</h3>
-            <p>关于 Blue Archive 的任何问题，都能得到即时、准确的回答。</p>
-          </article>
-          <article class="feature-card reveal">
-            <div class="feature-icon">📊</div>
-            <h3>养成计算器</h3>
-            <p>计算升级、专武、技能素材需求，规划养成一目了然。</p>
-          </article>
-          <article class="feature-card reveal">
-            <div class="feature-icon">⚔️</div>
-            <h3>阵容推荐</h3>
-            <p>按关卡与敌人自动匹配最优队伍与站位思路。</p>
-          </article>
-          <article class="feature-card reveal">
-            <div class="feature-icon">💻</div>
-            <h3>开源 SDK</h3>
-            <p>提供简洁的 API 与示例代码，轻松接入你的项目。</p>
-          </article>
-        </div>
+      <!-- Scene 2 UI -->
+      <div class="scene2" id="scene2">
+        <h2>深入基沃托斯 · 模型档案</h2>
+        <p>设定集、好感度模型、交互模型与联系方式，随滚动依次展开 —— 点开任意一张，查看完整设定。</p>
       </div>
-    </section>
 
-    <!-- ============================================================ -->
-    <!-- 区块 5：数据统计（四个数字，可修改数字与说明）              -->
-    <!-- ============================================================ -->
-    <section id="stats" class="section">
-      <div class="container">
-        <div class="stats-grid">
-          <div class="stat reveal">
-            <span class="stat-num" data-target="1200">0</span><span class="stat-plus">+</span>
-            <p>收录角色与装备</p>
-          </div>
-          <div class="stat reveal">
-            <span class="stat-num" data-target="500">0</span><span class="stat-plus">+</span>
-            <p>关卡攻略数据</p>
-          </div>
-          <div class="stat reveal">
-            <span class="stat-num" data-target="99">0</span><span class="stat-plus">%</span>
-            <p>开源代码覆盖率</p>
-          </div>
-          <div class="stat reveal">
-            <span class="stat-num" data-target="10">0</span><span class="stat-plus">k+</span>
-            <p>社区活跃玩家</p>
-          </div>
+    </div>
+  </div>
+
+  <!-- 详情弹出层 -->
+  <div class="ba-panel" id="baPanel" role="dialog" aria-modal="true">
+    <div class="ba-panel-box">
+      <div class="ba-panel-head">
+        <div>
+          <h3 id="baPanelTitle">模块</h3>
+          <p id="baPanelSub"></p>
         </div>
+        <button type="button" class="ba-panel-close" id="baPanelClose" aria-label="关闭">✕</button>
       </div>
-    </section>
+      <div class="ba-panel-body" id="baPanelBody"></div>
+    </div>
+  </div>
 
-    <!-- ============================================================ -->
-    <!-- 区块 6：联系表单（前端演示，可接入后端）                    -->
-    <!-- ============================================================ -->
-    <section id="contact" class="section section-alt">
-      <div class="container">
-        <div class="contact-card reveal">
-          <div class="section-head">
-            <p class="section-tag">联系我们</p>
-            <h2 class="section-title">加入我们，一起构建</h2>
-            <p class="section-desc">有建议、想法或想要的功能？告诉我们，我们会在一个工作日内回复。</p>
-          </div>
-          <form class="contact-form" id="contactForm" method="POST" action="https://formsubmit.co/wsh260622@outlook.com">
-            <input type="hidden" name="_subject" value="【Blue Archive AI Code】网站新消息" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_template" value="table" />
-            <div class="form-row">
-              <input type="text" name="name" placeholder="你的称呼" required />
-              <input type="email" name="email" placeholder="邮箱地址" required />
-            </div>
-            <textarea name="message" rows="4" placeholder="你的建议或需求" required></textarea>
-            <button type="submit" class="btn btn-primary btn-block">发送消息</button>
-            <p class="form-note" id="formNote" hidden>✓ 已收到，我们会尽快联系你！</p>
-          </form>
-        </div>
+  <!-- 联系表单：常驻 DOM（script.js 在加载时绑定它的 AJAX 提交），弹出层时搬进详情框 -->
+  <div id="contactHost" style="display:none">
+    <form class="contact-form" id="contactForm" method="POST" action="https://formsubmit.co/wsh260622@outlook.com">
+      <input type="hidden" name="_subject" value="【Blue Archive AI Code】网站新消息" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_template" value="table" />
+      <div class="form-row">
+        <input type="text" name="name" placeholder="你的称呼" required />
+        <input type="email" name="email" placeholder="邮箱地址" required />
       </div>
-    </section>
-  </main>
+      <textarea name="message" rows="5" placeholder="你的建议或需求" required></textarea>
+      <button type="submit" class="btn btn-primary btn-block">发送消息</button>
+      <p class="form-note" id="formNote" hidden>✓ 已收到，我们会尽快联系你！</p>
+    </form>
+  </div>
 
-  <!-- ============================================================ -->
-  <!-- 区块 7：页脚（版权信息 + 底部链接）                          -->
-  <!-- ============================================================ -->
   <footer class="site-footer">
     <div class="container footer-inner">
       <p>© <span id="year"></span> Blue Archive AI Code · 用心做好每一个工具</p>
       <p>作者MFC（抖音）</p>
       <p class="footer-links">
-        <a href="#home">首页</a> · <a href="#about">关于</a> · <a href="#contact">联系</a>
+        <a href="index.html">首页</a> · <a href="tools.html">设定集</a> ·
+        <a href="affection.html">好感度</a> · <a href="interaction.html">交互</a>
       </p>
     </div>
   </footer>
 
   <script src="script.js"></script>
+  <script src="wallpaper/spine-webgl-4.2.js"></script>
+  <script src="wallpaper/wallpaper.js"></script>
+  <audio id="baBgm" src="assets/home/bgm.mp3" loop preload="auto"></audio>
+  <script src="home-data.js?v=20260919f"></script>
+  <script src="home-scene.js?v=20260919f"></script>
 </body>
 </html>
