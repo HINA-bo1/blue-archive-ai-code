@@ -7,7 +7,7 @@
   <title>Blue Archive AI Code</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="wallpaper/wallpaper.css" />
-  <link rel="stylesheet" href="home-scene.css?v=20260919f" />
+  <link rel="stylesheet" href="home-scene.css?v=20260925b" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27><rect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230b7fe8%27/><text x=%2732%27 y=%2743%27 font-size=%2726%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27>BA</text></svg>" />
 </head>
 <body>
@@ -115,20 +115,8 @@
       <!-- 顶部渐隐 -->
       <div class="ly-fade-top"></div>
 
-      <!-- Scene 1 UI（文案与小卡已按需求移除，仅保留滚动提示） -->
+      <!-- Scene 1 UI（旧宣传卡已移除，内容并入 Scene 2 模块；滚动提示已隐藏） -->
       <div class="scene1" id="scene1">
-        <div class="scene1-cards is-hidden">
-          <div class="s1-card fade-in" style="--c1:#4ea8ff;--c2:#7fe3ff">
-            <h4>情报速查</h4><p>AI 汇总角色、装备、活动情报，随时随地问答。</p>
-          </div>
-          <div class="s1-card fade-in" style="--c1:#f6a8c8;--c2:#ffd0e2">
-            <h4>阵容推荐</h4><p>基于关卡数据智能生成总力战与竞技场阵容。</p>
-          </div>
-          <div class="s1-card fade-in" style="--c1:#a99bf5;--c2:#d4ccff">
-            <h4>开源代码</h4><p>核心工具全部开源，文档清晰，欢迎二次开发。</p>
-          </div>
-        </div>
-
         <div class="scene-cue fade-in">
           <span>DESCEND</span>
           <i>
@@ -183,8 +171,9 @@
       <p>© <span id="year"></span> Blue Archive AI Code · 用心做好每一个工具</p>
       <p>作者MFC（抖音）</p>
       <p class="footer-links">
-        <a href="index.html">首页</a> · <a href="tools.html">设定集</a> ·
-        <a href="affection.html">好感度</a> · <a href="interaction.html">交互</a>
+        <a href="#" data-goto="0">首页</a> · <a href="#" data-goto="0.70">设定集</a> ·
+        <a href="#" data-goto="0.79">好感度</a> · <a href="#" data-goto="0.88">交互</a> ·
+        <a href="#" data-goto="0.97">联系</a>
       </p>
     </div>
   </footer>
@@ -193,7 +182,7 @@
   <script src="wallpaper/spine-webgl-4.2.js"></script>
   <script src="wallpaper/wallpaper.js"></script>
   <audio id="baBgm" src="assets/home/bgm.mp3" loop preload="auto"></audio>
-  <script src="home-data.js?v=20260919f"></script>
-  <script src="home-scene.js?v=20260919f"></script>
+  <script src="home-data.js?v=20260925b"></script>
+  <script src="home-scene.js?v=20260925b"></script>
 </body>
 </html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>页面已迁移 · Blue Archive AI Code</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27><rect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230b7fe8%27/><text x=%2732%27 y=%2743%27 font-size=%2726%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27>BA</text></svg>" />
+  <style>
+    /* 配色沿用首页夜空叙事：--ba-night / --ba-blue / --ba-cyan */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+      color: #eaf3ff; line-height: 1.75; -webkit-font-smoothing: antialiased;
+      background: #060b18;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+    /* 夜空：底色 + 几处冷色光晕 + 散星 */
+    .nf-sky {
+      position: fixed; inset: 0; z-index: -1;
+      background:
+        radial-gradient(1100px 620px at 50% 108%, rgba(78,168,255,.20), transparent 62%),
+        radial-gradient(760px 480px at 12% 6%, rgba(127,227,255,.13), transparent 60%),
+        radial-gradient(700px 460px at 92% 14%, rgba(169,155,245,.14), transparent 60%),
+        linear-gradient(180deg, #060b18 0%, #0a1326 58%, #0d1a33 100%);
+    }
+    .nf-sky::after {
+      content: ""; position: absolute; inset: 0; opacity: .55;
+      background-image:
+        radial-gradient(1.4px 1.4px at 12% 22%, rgba(255,255,255,.9), transparent),
+        radial-gradient(1.2px 1.2px at 28% 62%, rgba(255,255,255,.7), transparent),
+        radial-gradient(1.6px 1.6px at 44% 18%, rgba(255,255,255,.85), transparent),
+        radial-gradient(1.1px 1.1px at 58% 44%, rgba(255,255,255,.6), transparent),
+        radial-gradient(1.5px 1.5px at 72% 26%, rgba(255,255,255,.8), transparent),
+        radial-gradient(1.2px 1.2px at 86% 58%, rgba(255,255,255,.65), transparent),
+        radial-gradient(1.3px 1.3px at 34% 78%, rgba(255,255,255,.55), transparent),
+        radial-gradient(1.1px 1.1px at 66% 82%, rgba(255,255,255,.5), transparent);
+    }
+
+    .nf-card {
+      width: 100%; max-width: 620px; text-align: center;
+      padding: 44px 40px 34px; border-radius: 26px;
+      background: linear-gradient(160deg, rgba(24,40,74,.72), rgba(10,19,38,.78));
+      border: 1px solid rgba(127,227,255,.22);
+      box-shadow: 0 26px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(16px) saturate(1.5);
+      -webkit-backdrop-filter: blur(16px) saturate(1.5);
+      animation: nf-in .6s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes nf-in { from { opacity: 0; transform: translateY(18px) scale(.985); } }
+
+    .nf-code {
+      font-size: 58px; font-weight: 800; letter-spacing: .04em; line-height: 1.1;
+      background: linear-gradient(120deg, #7fe3ff, #4ea8ff 45%, #a99bf5);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .nf-title { margin-top: 6px; font-size: 25px; font-weight: 700; color: #fff; }
+    .nf-desc {
+      margin: 16px auto 0; max-width: 460px; font-size: 15px;
+      color: rgba(234,243,255,.82);
+    }
+    .nf-map {
+      margin: 18px auto 0; max-width: 460px; padding: 12px 16px; border-radius: 14px;
+      background: rgba(78,168,255,.10); border: 1px solid rgba(127,227,255,.20);
+      font-size: 14px; color: rgba(234,243,255,.9);
+    }
+    .nf-map b { color: #7fe3ff; font-weight: 600; }
+
+    .nf-actions { margin-top: 26px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .nf-btn {
+      display: inline-block; padding: 12px 28px; border-radius: 999px;
+      font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+    .nf-btn.primary {
+      color: #061225; background: linear-gradient(120deg, #7fe3ff, #4ea8ff);
+      box-shadow: 0 10px 30px rgba(78,168,255,.35);
+    }
+    .nf-btn.ghost {
+      color: #d7e8ff; border: 1px solid rgba(127,227,255,.32);
+      background: rgba(255,255,255,.05);
+    }
+    .nf-btn:hover { transform: translateY(-2px); }
+    .nf-btn.primary:hover { box-shadow: 0 14px 38px rgba(78,168,255,.5); }
+    .nf-btn.ghost:hover { background: rgba(255,255,255,.1); }
+
+    .nf-quick { margin-top: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.09); }
+    .nf-quick span {
+      display: block; font-size: 12px; letter-spacing: .1em;
+      color: rgba(234,243,255,.5); margin-bottom: 12px;
+    }
+    .nf-quick a {
+      display: inline-block; margin: 4px 5px; padding: 7px 16px; border-radius: 999px;
+      font-size: 13px; text-decoration: none; color: #cfe6ff;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+      transition: background .18s ease, color .18s ease;
+    }
+    .nf-quick a:hover { background: rgba(127,227,255,.18); color: #fff; }
+
+    .nf-countdown { margin-top: 18px; font-size: 13px; color: rgba(234,243,255,.55); min-height: 20px; }
+
+    @media (max-width: 560px) {
+      .nf-card { padding: 34px 24px 28px; border-radius: 22px; }
+      .nf-code { font-size: 46px; }
+      .nf-title { font-size: 21px; }
+      .nf-btn { padding: 11px 22px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nf-sky" aria-hidden="true"></div>
+
+  <main class="nf-card">
+    <div class="nf-code">404</div>
+    <h1 class="nf-title">这条链接已经搬家了</h1>
+    <p class="nf-desc" id="nfDesc">这个页面不存在，或已经被合并到全新的首页里。</p>
+
+    <div class="nf-map" id="nfMap" hidden></div>
+
+    <div class="nf-actions">
+      <a class="nf-btn primary" id="nfGo" href="index.html">回到首页</a>
+      <a class="nf-btn ghost" href="index.html?goto=0.97">联系我们</a>
+    </div>
+
+    <div class="nf-quick">
+      <span>直接跳到</span>
+      <a href="index.html?goto=0.70">设定集</a>
+      <a href="index.html?goto=0.79">好感度模型</a>
+      <a href="index.html?goto=0.88">交互模型</a>
+      <a href="index.html?goto=0">首页顶部</a>
+    </div>
+
+    <p class="nf-countdown" id="nfCount"></p>
+  </main>
+
+  <script>
+  (function () {
+    /* 旧页面 → 首页对应模块的滚动进度（与 index.html 导航的 data-goto 一致） */
+    var MAP = {
+      'tools':       { name: '设定集',     p: 0.70 },
+      'affection':   { name: '好感度模型', p: 0.79 },
+      'interaction': { name: '交互模型',   p: 0.88 }
+    };
+
+    /* 解析来源：优先 ?from=xxx（便于本地测试），否则用当前路径（GitHub Pages 保留原 URL） */
+    var qs = location.search.match(/[?&]from=([^&]+)/);
+    var raw = qs ? decodeURIComponent(qs[1]) : location.pathname;
+    var file = (raw.split('/').pop() || '').toLowerCase();
+    var hit = MAP[file.replace(/\.html?$/, '')];
+
+    var target = hit ? 'index.html?goto=' + hit.p : 'index.html';
+
+    if (hit) {
+      document.getElementById('nfDesc').textContent =
+        '「' + hit.name + '」已不再是独立页面，我们把它合并进了全新的首页。';
+      var map = document.getElementById('nfMap');
+      map.innerHTML = '正在前往：<b>首页 · ' + hit.name + '</b>';
+      map.hidden = false;
+      var go = document.getElementById('nfGo');
+      go.textContent = '前往 · ' + hit.name;
+      go.href = target;
+    }
+
+    /* 倒计时自动跳转，任何手动点击都优先 */
+    var COUNT = 4, left = COUNT, stopped = false;
+    var el = document.getElementById('nfCount');
+    el.textContent = left + ' 秒后自动跳转…';
+    document.addEventListener('click', function () { stopped = true; }, true);
+
+    var timer = setInterval(function () {
+      if (stopped) { clearInterval(timer); el.textContent = '已停止自动跳转'; return; }
+      left -= 1;
+      if (left > 0) {
+        el.textContent = left + ' 秒后自动跳转…';
+      } else {
+        clearInterval(timer);
+        el.textContent = '正在跳转…';
+        location.href = target;
+      }
+    }, 1000);
+  })();
+  </script>
+</body>
+</html>

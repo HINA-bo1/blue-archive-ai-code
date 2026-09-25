@@ -323,26 +323,6 @@
   text-shadow: 0 1px 12px rgba(0,0,0,.8);
 }
 
-.scene1-cards {
-  position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
-  display: flex; gap: 12px;
-}
-/* 小卡按需求隐藏（保留 DOM，想恢复时删掉 is-hidden 即可） */
-.scene1-cards.is-hidden { display: none; }
-.s1-card {
-  position: relative; overflow: hidden;
-  width: 158px; height: 158px; border-radius: 28px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.45);
-  background: linear-gradient(150deg, var(--c1), var(--c2));
-  padding: 14px; display: flex; flex-direction: column; justify-content: flex-end;
-  color: #fff;
-}
-.s1-card h4 { font-size: 15px; font-weight: 700; margin: 0 0 6px; }
-.s1-card p { margin: 0; font-size: 12px; line-height: 1.55; color: rgba(255,255,255,.82); }
-.s1-card::before {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(6,11,24,.62), rgba(6,11,24,.12) 44%, rgba(6,11,24,.72));
-}
 
 .scene1-stats { display: flex; gap: 28px; margin-top: 22px; }
 .scene1-stats div span {
@@ -481,7 +461,6 @@
 /* ---------- 响应式 ---------- */
 @media (max-width: 1100px) {
   .scene1-head { left: 32px; max-width: 60%; top: 42%; }
-  .scene1-cards { display: none; }
   .arc-wrap { height: 300px; bottom: 60px; }
   .ly-world .w-president { height: 14vh; left: 20%; }
   .ly-world .w-president-ref { height: 14vh; left: 20%; }

@@ -1,4 +1,4 @@
-/* 自动生成：请勿手改。源 = tools.html / affection.html */
+/* 自动生成：请勿手改。快照自旧 tools.html / affection.html —— 旧页已删除，本文件为唯一数据源 */
 window.BA_MODULES = [
   {
     "id": "codex",

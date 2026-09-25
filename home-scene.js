@@ -160,11 +160,12 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lastOpened >= 0) closePanel(); });
 
   /* ---------- 导航：滚动到指定进度 ---------- */
-  function gotoProgress(p) {
+  function gotoProgress(p, behavior) {
     var total = scrollEl.offsetHeight - window.innerHeight;
-    window.scrollTo({ top: total * p, behavior: 'smooth' });
+    window.scrollTo({ top: total * p, behavior: behavior || 'smooth' });
   }
-  document.querySelectorAll('.nav-links a[data-goto]').forEach(function (a) {
+  // 全局生效：导航栏与页脚的 data-goto 链接都能滚动到对应模块
+  document.querySelectorAll('a[data-goto]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       e.preventDefault();
       gotoProgress(parseFloat(a.getAttribute('data-goto')) || 0);
@@ -172,6 +173,24 @@
       if (links) links.classList.remove('open');
     });
   });
+
+  /* ---------- URL 直达：?goto=0.70（供 404 兜底页把旧链接送到对应模块） ---------- */
+  (function () {
+    var m = /[?&]goto=([0-9.]+)/.exec(location.search);
+    if (!m) return;
+    var p = parseFloat(m[1]);
+    if (isNaN(p) || p <= 0) return;
+    // 密码门未解锁时 body 禁止滚动，必须等它移除后再跳
+    (function waitUnlocked(waited) {
+      if (!document.getElementById('lockScreen') || waited > 8000) {
+        // 站外直达用 'instant' 强制瞬间定位：
+        // 注意不能用 'auto' —— styles.css 里 html{scroll-behavior:smooth} 会让它退化成平滑动画
+        setTimeout(function () { gotoProgress(p, 'instant'); }, 260);
+        return;
+      }
+      setTimeout(function () { waitUnlocked(waited + 250); }, 250);
+    })(0);
+  })();
 
   /* ---------- 鼠标视差 ---------- */
   var MAG = { world: 6, clouds: 9, portal: 7, curtainL: 14, curtainR: 14 };
