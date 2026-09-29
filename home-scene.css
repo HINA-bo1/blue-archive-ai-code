@@ -145,18 +145,20 @@
   border-radius: 26px;
   overflow: hidden;
   isolation: isolate;
-  /* 液态玻璃：底色压到极淡，壁纸几乎直接透出；只保留一丝磨砂撑住玻璃感 */
+  /* 液态玻璃：极限通透档——底色近乎全透，靠"边缘高光 + 薄磨砂"撑住玻璃感 */
   background: linear-gradient(160deg,
-    color-mix(in srgb, var(--tint, #dce6f5) 20%, transparent),
-    color-mix(in srgb, var(--tint, #dce6f5) 12%, transparent));
-  -webkit-backdrop-filter: blur(7px) saturate(1.15);
-  backdrop-filter: blur(7px) saturate(1.15);
-  border: 1px solid rgba(255,255,255,.28);
+    color-mix(in srgb, var(--tint, #dce6f5) 10%, transparent),
+    color-mix(in srgb, var(--tint, #dce6f5) 6%, transparent));
+  -webkit-backdrop-filter: blur(4px) saturate(1.12) brightness(1.04);
+  backdrop-filter: blur(4px) saturate(1.12) brightness(1.04);
+  border: 1px solid rgba(255,255,255,.34);
   box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.38),
-    inset 0 -18px 30px rgba(255,255,255,.10),
-    0 8px 32px rgba(60,40,80,.16),
-    0 2px 10px rgba(0,0,0,.12);
+    /* 上下两条高光边 = 玻璃厚度感的来源，底色透明后靠它立住 */
+    inset 0 1px 0 rgba(255,255,255,.55),
+    inset 0 -1px 0 rgba(255,255,255,.22),
+    inset 0 -18px 30px rgba(255,255,255,.06),
+    0 8px 32px rgba(60,40,80,.12),
+    0 2px 10px rgba(0,0,0,.08);
   cursor: pointer; pointer-events: auto;
   transition: box-shadow .35s ease, filter .35s ease;
   will-change: transform;
@@ -167,8 +169,8 @@
 .arc-card::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(120% 90% at 12% 0%, rgba(255,255,255,.12), transparent 44%),
-    radial-gradient(90% 60% at 100% 100%, rgba(255,255,255,.05), transparent 55%);
+    radial-gradient(110% 80% at 12% 0%, rgba(255,255,255,.10), transparent 38%),
+    radial-gradient(90% 60% at 100% 100%, rgba(255,255,255,.04), transparent 55%);
 }
 .arc-card:hover {
   filter: brightness(1.06) saturate(1.05);
@@ -382,7 +384,7 @@
   position: fixed; inset: 0; z-index: 200;
   display: none; align-items: center; justify-content: center;
   padding: 5vh 4vw;
-  background: rgba(4,8,18,.48); backdrop-filter: blur(7px);
+  background: rgba(4,8,18,.36); backdrop-filter: blur(5px);
 }
 .ba-panel.is-open { display: flex; }
 .ba-panel-box {
