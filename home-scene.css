@@ -145,18 +145,18 @@
   border-radius: 26px;
   overflow: hidden;
   isolation: isolate;
-  /* 液态玻璃：底色压淡，让背后的壁纸透出来；质感仍靠磨砂模糊托底 */
+  /* 液态玻璃：底色压到极淡，壁纸几乎直接透出；只保留一丝磨砂撑住玻璃感 */
   background: linear-gradient(160deg,
-    color-mix(in srgb, var(--tint, #dce6f5) 34%, transparent),
-    color-mix(in srgb, var(--tint, #dce6f5) 22%, transparent));
-  -webkit-backdrop-filter: blur(12px) saturate(1.3);
-  backdrop-filter: blur(12px) saturate(1.3);
-  border: 1px solid rgba(255,255,255,.42);
+    color-mix(in srgb, var(--tint, #dce6f5) 20%, transparent),
+    color-mix(in srgb, var(--tint, #dce6f5) 12%, transparent));
+  -webkit-backdrop-filter: blur(7px) saturate(1.15);
+  backdrop-filter: blur(7px) saturate(1.15);
+  border: 1px solid rgba(255,255,255,.28);
   box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.5),
-    inset 0 -18px 30px rgba(255,255,255,.16),
-    0 8px 32px rgba(60,40,80,.20),
-    0 2px 10px rgba(0,0,0,.16);
+    inset 0 1px 1px rgba(255,255,255,.38),
+    inset 0 -18px 30px rgba(255,255,255,.10),
+    0 8px 32px rgba(60,40,80,.16),
+    0 2px 10px rgba(0,0,0,.12);
   cursor: pointer; pointer-events: auto;
   transition: box-shadow .35s ease, filter .35s ease;
   will-change: transform;
@@ -167,8 +167,8 @@
 .arc-card::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(120% 90% at 12% 0%, rgba(255,255,255,.24), transparent 44%),
-    radial-gradient(90% 60% at 100% 100%, rgba(255,255,255,.10), transparent 55%);
+    radial-gradient(120% 90% at 12% 0%, rgba(255,255,255,.12), transparent 44%),
+    radial-gradient(90% 60% at 100% 100%, rgba(255,255,255,.05), transparent 55%);
 }
 .arc-card:hover {
   filter: brightness(1.06) saturate(1.05);
@@ -195,24 +195,24 @@
 .arc-num {
   position: absolute; top: 14px; right: 14px;
   width: 24px; height: 24px; border-radius: 50%;
-  border: 1.5px solid rgba(60,40,60,.32);
-  background: rgba(255,255,255,.28);
+  border: 1.5px solid rgba(60,40,60,.30);
+  background: rgba(255,255,255,.18);
   color: rgba(50,34,52,.62);
   font-size: 10px; line-height: 21px; text-align: center;
 }
 /* 卡片变通透后，文字补一层白光晕保证可读 */
 .arc-title {
   font-size: 30px; font-weight: 800; color: #241627; line-height: 1.15;
-  text-shadow: 0 1px 12px rgba(255,255,255,.55);
+  text-shadow: 0 1px 14px rgba(255,255,255,.85), 0 0 4px rgba(255,255,255,.5);
 }
 .arc-desc {
-  font-size: 13px; color: rgba(45,30,46,.78); margin-top: 6px; line-height: 1.5;
-  text-shadow: 0 1px 8px rgba(255,255,255,.5);
+  font-size: 13px; color: rgba(38,25,40,.86); margin-top: 6px; line-height: 1.5;
+  text-shadow: 0 1px 10px rgba(255,255,255,.8), 0 0 3px rgba(255,255,255,.45);
 }
 .arc-cta {
   margin-top: 12px; font-size: 11px; letter-spacing: .14em;
-  color: rgba(45,30,46,.66); opacity: 0; transition: opacity .3s ease;
-  text-shadow: 0 1px 8px rgba(255,255,255,.5);
+  color: rgba(40,26,42,.76); opacity: 0; transition: opacity .3s ease;
+  text-shadow: 0 1px 10px rgba(255,255,255,.8), 0 0 3px rgba(255,255,255,.45);
 }
 .arc-card.is-active .arc-cta { opacity: 1; }
 
@@ -382,7 +382,7 @@
   position: fixed; inset: 0; z-index: 200;
   display: none; align-items: center; justify-content: center;
   padding: 5vh 4vw;
-  background: rgba(4,8,18,.72); backdrop-filter: blur(10px);
+  background: rgba(4,8,18,.48); backdrop-filter: blur(7px);
 }
 .ba-panel.is-open { display: flex; }
 .ba-panel-box {
