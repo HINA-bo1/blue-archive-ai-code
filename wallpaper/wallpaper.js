@@ -434,6 +434,14 @@
     var delta = now - lastFrameTime;
     lastFrameTime = now;
 
+    /* 壁纸已完全交棒给世界背景（Scene 2）时跳过 WebGL 绘制：
+       继续跑会把帧预算从弧形卡滑动那里抢走，滑动就会顿。
+       lastFrameTime 仍每帧更新，恢复时不会有 delta 跳变。 */
+    if (window.__BA_PAUSE_WALLPAPER) {
+      setTimeout(function () { requestAnimationFrame(render); }, 120);
+      return;
+    }
+
     gl.clearColor(bufferColor[0], bufferColor[1], bufferColor[2], 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 

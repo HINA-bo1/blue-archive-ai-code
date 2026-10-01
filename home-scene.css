@@ -287,7 +287,10 @@
 .hero-wallpaper {
   position: absolute; inset: 0; z-index: 5;
   min-height: 0; height: 100%; display: block;
-  transition: opacity .25s linear;
+  /* 注意：不要在这里挂 transition —— home-scene.js 每帧写 opacity/transform，
+     CSS 过渡会被反复重启，反而拖出延迟与抖动。缓动统一交给 JS 的 smoothstep。 */
+  will-change: opacity, transform;
+  backface-visibility: hidden;
 }
 /* 交互事件绑在渲染画布上：只有它放行鼠标/触摸；
    顶层 overlay 画布必须保持穿透，否则会吃掉全部事件导致热区失效 */

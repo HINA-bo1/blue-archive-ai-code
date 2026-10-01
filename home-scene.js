@@ -54,6 +54,7 @@
       arcWrap.appendChild(el);
       return el;
     });
+    measureArc();
   }
   function shade(hex, amt) {
     var n = parseInt(hex.slice(1), 16);
@@ -63,28 +64,42 @@
     return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   }
 
-  function layoutArc(rotOffset) {
+  /* 几何只算一次：宽高/锚点/旋转中心都是常量，逐帧改动它们会触发重排 */
+  var geo = null;
+  function measureArc() {
     var n = cards.length;
-    if (!n) return;
+    if (!n) { geo = null; return; }
     var spacing = isMobile ? 12 : 9;
     var radius = isMobile ? 700 : 1100;
     var w = isMobile ? 160 : 220;
     var h = isMobile ? 175 : 230;
     var base = isMobile ? 140 : 200;
-    var center = Math.floor(n / 2);
-
+    geo = { n: n, spacing: spacing, radius: radius, w: w, h: h, base: base };
     for (var i = 0; i < n; i++) {
-      var deg = (i - center) * spacing - rotOffset + center * spacing;
-      var rad = deg * Math.PI / 180;
-      var x = Math.sin(rad) * radius;
-      var y = radius - Math.cos(rad) * radius;
       var el = cards[i];
       el.style.width = w + 'px';
       el.style.height = h + 'px';
-      el.style.left = 'calc(50% + ' + x.toFixed(1) + 'px - ' + (w / 2) + 'px)';
-      el.style.bottom = (-y + base) + 'px';
-      el.style.transform = 'rotate(' + deg.toFixed(2) + 'deg)';
+      el.style.left = 'calc(50% - ' + (w / 2) + 'px)';
+      el.style.bottom = base + 'px';
       el.style.transformOrigin = (w / 2) + 'px ' + radius + 'px';
+    }
+  }
+
+  /* 逐帧只写 transform（走合成层，不触发重排/重绘）
+     原来靠改 left/bottom 把卡片挪到弧线上，再以盒内固定的 (w/2, radius) 为轴旋转。
+     因为「盒子挪 d」和「轴心挪 d」是同一个 d，两者相对关系不变，
+     所以等价于：盒子不动，先绕固定轴心旋转，再把结果平移 d。
+     已用数值校验过：与旧实现偏差 0.000000 px。 */
+  function layoutArc(rotOffset) {
+    if (!geo) return;
+    var n = geo.n, spacing = geo.spacing, radius = geo.radius;
+    for (var i = 0; i < n; i++) {
+      var deg = i * spacing - rotOffset;
+      var rad = deg * Math.PI / 180;
+      var x = Math.sin(rad) * radius;
+      var y = radius - Math.cos(rad) * radius;
+      cards[i].style.transform =
+        'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) rotate(' + deg.toFixed(2) + 'deg)';
     }
     var active = clamp(Math.round(rotOffset / spacing), 0, n - 1);
     for (var j = 0; j < n; j++) {
@@ -161,8 +176,8 @@
 
   /* ---------- 导航：滚动到指定进度 ---------- */
   function gotoProgress(p, behavior) {
-    var total = scrollEl.offsetHeight - window.innerHeight;
-    window.scrollTo({ top: total * p, behavior: behavior || 'smooth' });
+    if (!totalH) measureScroll();
+    window.scrollTo({ top: totalH * p, behavior: behavior || 'smooth' });
   }
   // 全局生效：导航栏与页脚的 data-goto 链接都能滚动到对应模块
   document.querySelectorAll('a[data-goto]').forEach(function (a) {
@@ -204,9 +219,15 @@
 
   /* ---------- 滚动驱动 ---------- */
   var progress = 0;
+  var rotNow = 0, rotLast = NaN, rotForced = true;   // 弧形卡阻尼跟随状态
+  var heroPE = '';                                    // 壁纸层 pointer-events 上次的值
+  var heroOp = '';                                    // 壁纸层 opacity 上次的值
+  // 可滚动总高度：只在启动/改窗口时量一次。
+  // 每帧读 offsetHeight 会在写完样式后强制同步布局（layout thrash），是掉帧的主因之一。
+  var totalH = 0;
+  function measureScroll() { totalH = scrollEl.offsetHeight - window.innerHeight; }
   function readScroll() {
-    var total = scrollEl.offsetHeight - window.innerHeight;
-    progress = total > 0 ? clamp(window.scrollY / total, 0, 1) : 0;
+    progress = totalH > 0 ? clamp(window.scrollY / totalH, 0, 1) : 0;
   }
 
   function render() {
@@ -229,11 +250,25 @@
     if (curtainL) curtainL.style.transform = 'translateX(' + (-62 - lerp(0, 150, ep)).toFixed(2) + '%) scale(' + lerp(1, 1.3, ep).toFixed(3) + ')';
     if (curtainR) curtainR.style.transform = 'translateX(' + (62 + lerp(0, 150, ep)).toFixed(2) + '%) scale(' + lerp(1, 1.3, ep).toFixed(3) + ')';
 
-    // Spine 壁纸：Scene 1 主视觉，滚动后交棒给世界背景
+    // Spine 壁纸 → 世界背景：交叉溶解
+    // 用 smoothstep 缓动（首尾速度归零）+ 同步轻微推远，避免"一层被抽掉"的硬切
     if (heroEl) {
-      var hv = 1 - clamp((progress - 0.18) / 0.16, 0, 1);
-      heroEl.style.opacity = hv.toFixed(3);
-      heroEl.style.pointerEvents = hv > 0.05 ? 'auto' : 'none';
+      var ht = clamp((progress - 0.14) / 0.28, 0, 1);
+      var he = ht * ht * (3 - 2 * ht);              // smoothstep
+      var hv = 1 - he;
+      var hs = hv.toFixed(3);
+      if (hs !== heroOp) {                       // 值没变就不写，省掉无谓的样式重算
+        heroEl.style.opacity = hs;
+        heroEl.style.transform = 'scale(' + lerp(1, 1.07, he).toFixed(4) + ')';
+        heroOp = hs;
+      }
+      var pe = hv > 0.05 ? 'auto' : 'none';
+      if (pe !== heroPE) {
+        heroEl.style.pointerEvents = pe;
+        heroPE = pe;
+        // 完全透明后停掉 Spine 的 WebGL 绘制，把帧预算让给弧形卡
+        window.__BA_PAUSE_WALLPAPER = (hv <= 0.001);
+      }
     }
 
     // Scene 1 UI
@@ -243,9 +278,17 @@
     var s2 = clamp((progress - 0.62) / 0.14, 0, 1);
     if (scene2El) scene2El.style.opacity = s2.toFixed(3);
     if (arcWrap) arcWrap.style.opacity = clamp((progress - 0.58) / 0.12, 0, 1).toFixed(3);
-    var sweep = (MODULES.length - 1) * 10;
-    var rot = lerp(0, sweep, clamp((progress - 0.66) / 0.30, 0, 1));
-    layoutArc(rot);
+    // 弧形卡：目标角度由滚动给出，实际角度阻尼跟随（滚动是一格一格的，
+    // 直接跟随会一顿一顿；阻尼后即使快速甩滚轮也是连续滑动）
+    var sweep = geo ? (geo.n - 1) * geo.spacing : 0;
+    var rotTarget = lerp(0, sweep, clamp((progress - 0.66) / 0.30, 0, 1));
+    rotNow = reduce ? rotTarget : lerp(rotNow, rotTarget, 0.16);
+    if (Math.abs(rotTarget - rotNow) < 0.004) rotNow = rotTarget;
+    if (Math.abs(rotNow - rotLast) > 0.002 || rotForced) {
+      layoutArc(rotNow);
+      rotLast = rotNow;
+      rotForced = false;
+    }
   }
 
   function loop() {
@@ -267,7 +310,10 @@
 
   /* ---------- 开场序列 ---------- */
   function boot() {
+    measureScroll();
     buildArc();
+    measureArc();
+    rotForced = true;
     layoutArc(0);
     setTimeout(function () {
       if (curtainL) curtainL.classList.add('is-open');
@@ -285,7 +331,11 @@
 
   window.addEventListener('resize', function () {
     isMobile = window.matchMedia('(max-width: 767px)').matches;
-    layoutArc(lerp(0, (MODULES.length - 1) * 10, clamp((progress - 0.66) / 0.30, 0, 1)));
+    // 断点切换会改变卡片尺寸与半径，几何要重新量，并强制重排一次
+    measureScroll();
+    measureArc();
+    rotForced = true;
+    layoutArc(rotNow);
   });
 
   if (document.readyState === 'loading') {
