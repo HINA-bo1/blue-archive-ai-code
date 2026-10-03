@@ -1,38 +1,3 @@
-/* 密码锁屏 */
-const ACCESS_KEY = "Hina";
-const SESSION_FLAG = "ba_access";
-
-(function lockInit() {
-  const lock = document.getElementById("lockScreen");
-  if (!lock) return;
-  if (sessionStorage.getItem(SESSION_FLAG) === ACCESS_KEY) {
-    lock.remove();
-    return;
-  }
-  document.body.classList.add("locked");
-  const input = document.getElementById("lockPassword");
-  const btn = document.getElementById("lockEnter");
-  const err = document.getElementById("lockError");
-
-  const tryEnter = () => {
-    if (input.value.trim() === ACCESS_KEY) {
-      sessionStorage.setItem(SESSION_FLAG, ACCESS_KEY);
-      lock.remove();
-      document.body.classList.remove("locked");
-    } else {
-      err.textContent = "密码错误，请重试";
-      input.value = "";
-      input.focus();
-    }
-  };
-
-  btn.addEventListener("click", tryEnter);
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") tryEnter();
-  });
-  input.focus();
-})();
-
 /* 导航栏滚动效果 */
 const header = document.querySelector(".site-header");
 window.addEventListener("scroll", () => {
