@@ -7,22 +7,11 @@
   <title>Blue Archive AI Code</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="wallpaper/wallpaper.css" />
-  <link rel="stylesheet" href="home-scene.css?v=20261007c" />
+  <link rel="stylesheet" href="home-scene.css?v=20261007k" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27><rect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230b7fe8%27/><text x=%2732%27 y=%2743%27 font-size=%2726%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27>BA</text></svg>" />
 </head>
 <body>
 
-  <!-- 密码锁屏 -->
-  <div class="lock-screen" id="lockScreen">
-    <div class="lock-card">
-      <div class="lock-icon">🔒</div>
-      <h2>Blue Archive AI Code</h2>
-      <p>请输入访问密码</p>
-      <input type="password" class="lock-input" id="lockPassword" placeholder="密码" autocomplete="off" />
-      <p class="lock-error" id="lockError"></p>
-      <button type="button" class="btn btn-primary btn-block" id="lockEnter">进入网站</button>
-    </div>
-  </div>
 
   <!-- 导航栏（首页沉浸版：链接改为滚动到对应场景） -->
   <header class="site-header">
@@ -50,8 +39,14 @@
   <div class="ba-scroll" id="baScroll">
     <div class="ba-stage" id="baStage">
 
-      <!-- 图层 1：世界背景（还原工坊壁纸 3032469660「一切奇迹的始发点」场景） -->
+      <!-- 图层 1：世界背景（工坊动态壁纸「蔚蓝档案加载界面」视频版）
+           .is-video 类由 home-scene.js 控制：只有系统开了「减弱动态效果」时才不加，
+           那种情况会改回静态世界背景。想彻底去掉视频：把下面这行 <video> 删掉即可。 -->
       <div class="ly-world" id="lyWorld">
+        <!-- 初始不带 src，preload=none 保证首屏不下载；
+             滚动进入第二屏时由 home-scene.js 注入 data-src 并播放。 -->
+        <video class="w-video" id="worldVideo" muted loop playsinline preload="none"
+               aria-hidden="true" data-src="assets/home/world-loading.mp4"></video>
         <div class="w-sky"></div>
         <div class="w-water"></div>
         <div class="w-shimmer"></div>
@@ -182,7 +177,7 @@
   <script src="wallpaper/spine-webgl-4.2.js"></script>
   <script src="wallpaper/wallpaper.js"></script>
   <audio id="baBgm" src="assets/home/bgm.mp3" loop preload="auto"></audio>
-  <script src="home-data.js?v=20261007c"></script>
-  <script src="home-scene.js?v=20261007c"></script>
+  <script src="home-data.js?v=20261007k"></script>
+  <script src="home-scene.js?v=20261007k"></script>
 </body>
 </html>

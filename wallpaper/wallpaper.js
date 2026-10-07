@@ -54,6 +54,9 @@
 
   /* 加载健壮性：失败必须有反馈，不能无限重试静默卡死 */
   var LOAD_TIMEOUT = 30000;          // 4K 贴图较大，给足 30 秒
+  /* file:// 协议下 XHR 一定被浏览器拦截，等满 30 秒没有意义。
+     这种情况把看门狗缩短，让兜底提示立刻显示，用户一眼就知道该换成 http 打开。 */
+  if (location.protocol === 'file:') LOAD_TIMEOUT = 2500;
   var ready = false;
   var assetFailed = false;
   var failReason = '';

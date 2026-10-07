@@ -35,6 +35,36 @@
   background: #c9cdf0; /* 图片加载前的兜底色（与天空同调） */
   will-change: transform;
 }
+/* ---------- 视频层：动态世界背景（工坊壁纸「蔚蓝档案加载界面」） ---------- */
+/* 铺满视口并按 cover 裁切；未加载/加载失败时用 poster 图兜底，不会闪黑 */
+.ly-world .w-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: cover;
+  background: #b8d5ee url("assets/home/world-loading-poster.jpg") center center / cover no-repeat;
+}
+/* 没开视频模式（手机竖屏 / 减弱动效偏好）时藏掉视频层，
+   让下面的天空·水面·远山·会长剪影这套静态世界背景露出来 */
+.ly-world:not(.is-video) .w-video { display: none; }
+/* .is-video 生效时，隐藏原来那套静态图层（天空/水面/远山/会长剪影+倒影）
+   以及绑死在 --horizon 上的波光与地平线光辉 —— 它们的锚点跟视频构图对不上，
+   留着会像"贴纸浮在半空"。 */
+.ly-world.is-video .w-sky,
+.ly-world.is-video .w-water,
+.ly-world.is-video .w-mountain,
+.ly-world.is-video .w-president,
+.ly-world.is-video .w-president-ref,
+.ly-world.is-video .w-shimmer,
+.ly-world.is-video .w-glow,
+.ly-world.is-video .w-meteors { display: none; }
+/* 视频本身很亮，明暗层比原来收得更轻，只保留顶部/底部的轻压暗，保证叠字可读 */
+.ly-world.is-video .w-shade {
+  background:
+    linear-gradient(180deg, rgba(16,14,40,.26), rgba(16,14,40,0) 16%),
+    linear-gradient(0deg, rgba(18,16,44,.34), rgba(18,16,44,0) 26%);
+}
+
 /* 天空 3840×1664：铺到地平线；锚定底部，太阳光辉贴住地平线不被裁掉 */
 .ly-world .w-sky {
   position: absolute; left: 0; right: 0; top: 0; height: var(--horizon);
@@ -306,7 +336,7 @@
 }
 /* 兜底时在左下角显示原因提示，避免「背景没了」无法自查 */
 .hero-wallpaper.is-fallback::after {
-  content: "动态背景加载失败：当前是 file:// 直接打开，模型资源被浏览器拦截。请通过 http://127.0.0.1:8793/index.local.html 或线上站访问。";
+  content: "动态背景加载失败：当前是通过 file:// 直接打开页面，浏览器会拦截模型资源的跨源请求。请改用本地 HTTP 服务打开 —— 在项目目录执行 python -m http.server 8000，然后访问 http://127.0.0.1:8000/index.html";
   position: fixed; left: 16px; bottom: 16px; z-index: 999;
   max-width: 420px; padding: 10px 14px; border-radius: 10px;
   background: rgba(6,11,24,.82); border: 1px solid rgba(255,170,90,.45);
@@ -470,6 +500,16 @@
 .site-header .nav-links a { color: rgba(255,255,255,.82) !important; }
 .site-header .nav-links a:hover { color: var(--ba-cyan) !important; }
 .site-header .nav-toggle span { background: #fff !important; }
+/* 移动端下拉菜单：上面把导航文字强制刷成白色，但 styles.css 里面板底色是白色，
+   白底白字等于看不见 —— 这里把展开的面板改成深色，跟 .scrolled 的头部一致 */
+@media (max-width: 768px) {
+  .site-header .nav-links {
+    background: rgba(6, 11, 24, 0.94) !important;
+    backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  }
+  .site-header .nav-links li { border-bottom-color: rgba(255, 255, 255, 0.10); }
+}
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 1100px) {

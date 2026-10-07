@@ -12,6 +12,7 @@
   var heroEl = document.getElementById('baHeroWallpaper');
   var portalEl = document.getElementById('lyPortal');
   var worldEl = document.getElementById('lyWorld');
+  var worldVideo = document.getElementById('worldVideo');
   var cloudsEl = document.getElementById('lyClouds');
   var curtainL = document.getElementById('lyCurtainL');
   var curtainR = document.getElementById('lyCurtainR');
@@ -230,6 +231,48 @@
     progress = totalH > 0 ? clamp(window.scrollY / totalH, 0, 1) : 0;
   }
 
+  /* ---------- 世界背景视频：按需加载 + 露出时才播放 ---------- */
+  // 18MB 的视频绝不能首屏就下。这里只在滚动推进到第二屏附近时才注入 src，
+  // 并且只在视频真正露出那一刻开始播放，其余时间暂停，省带宽也省 CPU。
+  var videoSrc = worldVideo ? worldVideo.getAttribute('data-src') : null;
+  var videoStarted = false;    // 是否已经发起下载
+  var videoPlaying = false;    // 当前是否在播
+  var VIDEO_LOAD_AT = 0.03;    // 滚到这个进度开始下载
+  var VIDEO_PLAY_AT = 0.08;    // 滚到这个进度才播放（此时 Spine 壁纸刚开始淡出）
+
+  // 只在「减弱动态效果」偏好下才不启用视频（那种情况连下载都不发起，直接走静态世界背景）。
+  // 手机竖屏同样会加载并播放这条壁纸。
+  // 注意：手机竖屏是 0.46:1，而这条视频是 2.165:1 的超宽画幅，object-fit:cover 之后
+  // 只能显示画面中间约 20% 的宽度，人物两侧会被切掉 —— 这是竖屏铺满的必然代价。
+  // 想让手机改回静态世界背景，把下面的判断改回 `!reduce && !isMobile` 即可。
+  function videoAllowed() { return !reduce; }
+  function applyVideoMode() {
+    if (!worldEl) return;
+    if (videoAllowed()) worldEl.classList.add('is-video');
+    else worldEl.classList.remove('is-video');
+  }
+
+  function syncWorldVideo() {
+    if (!worldVideo || !videoSrc) return;
+    if (!videoAllowed()) return;   // 手机/减弱动效：连下载都不发起
+    if (!videoStarted && progress >= VIDEO_LOAD_AT) {
+      videoStarted = true;
+      worldVideo.setAttribute('src', videoSrc);   // 注入 src，浏览器开始拉流
+      worldVideo.load();
+    }
+    if (!videoStarted) return;
+    var want = !document.hidden && progress >= VIDEO_PLAY_AT;
+    if (want && !videoPlaying) {
+      var pr = worldVideo.play();
+      if (pr && pr.catch) pr.catch(function () {});   // 自动播放被拦也无妨，有 poster 兜底
+      videoPlaying = true;
+    } else if (!want && videoPlaying) {
+      worldVideo.pause();
+      videoPlaying = false;
+    }
+  }
+  document.addEventListener('visibilitychange', syncWorldVideo);
+
   function render() {
     var ep = easeInOut(progress);
 
@@ -289,6 +332,8 @@
       rotLast = rotNow;
       rotForced = false;
     }
+
+    syncWorldVideo();
   }
 
   function loop() {
@@ -310,6 +355,7 @@
 
   /* ---------- 开场序列 ---------- */
   function boot() {
+    applyVideoMode();
     measureScroll();
     buildArc();
     measureArc();
@@ -331,6 +377,7 @@
 
   window.addEventListener('resize', function () {
     isMobile = window.matchMedia('(max-width: 767px)').matches;
+    applyVideoMode();   // 手机横过来 / 平板横竖屏切换时重新决定是否用视频
     // 断点切换会改变卡片尺寸与半径，几何要重新量，并强制重排一次
     measureScroll();
     measureArc();
