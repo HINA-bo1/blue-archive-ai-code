@@ -126,19 +126,6 @@ if (yearEl) {
   const acceptBtn = document.getElementById("termsAccept");
   const body = document.getElementById("termsBody");
   const link = document.getElementById("termsLink");
-  const guideLink = document.getElementById("guideLink");
-
-  /* 把正文滚动到指定小节标题处（页脚「使用者须知」直达第七节） */
-  function scrollToHeading(keyword) {
-    if (!body) return;
-    const hs = body.querySelectorAll("h3");
-    for (const h of hs) {
-      if (h.textContent.indexOf(keyword) >= 0) {
-        body.scrollTop += h.getBoundingClientRect().top - body.getBoundingClientRect().top - 12;
-        return;
-      }
-    }
-  }
 
   const isGate = () => checkRow && !checkRow.hidden;
 
@@ -149,7 +136,7 @@ if (yearEl) {
     try { localStorage.setItem(TERMS_KEY, TERMS_VER); } catch (e) { /* 隐私模式下忽略 */ }
   };
 
-  function open(mode, focus) {
+  function open(mode) {
     const gate = mode === "gate";
     if (checkRow) checkRow.hidden = !gate;
     if (closeBtn) closeBtn.hidden = gate;              // 门禁模式下不给关闭按钮
@@ -163,7 +150,6 @@ if (yearEl) {
     mask.hidden = false;
     document.body.classList.add("terms-locked");
     if (body) body.scrollTop = 0;
-    if (focus) scrollToHeading(focus);
   }
 
   function close() {
@@ -191,13 +177,7 @@ if (yearEl) {
   if (link) {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      open("view", "terms");
-    });
-  }
-  if (guideLink) {
-    guideLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      open("view", "使用者须知");   // 直接定位到第七节
+      open("view");
     });
   }
 
