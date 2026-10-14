@@ -88,36 +88,98 @@
 }
 .hw-inner .page-hero-sub { color: rgba(255, 255, 255, .88); }
 
-/* ---------- 加载态（4K 资源约 34MB） ---------- */
+/* ---------- 占位图：首屏秒开，Spine 就绪后淡出 ----------
+   取景点对齐画布：设计尺寸 2560×1600，而画布的视觉中心在 Y=900
+   （resize() 里的 centerY），也就是纵向 56.25% 处。 */
+/* 外层 <picture> 不生成盒子，否则会变成 hero 的 flex item 影响布局 */
+.hero-wallpaper picture { display: contents; }
+
+.hw-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 56.25%;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  opacity: 1;
+  transition: opacity .8s ease;
+}
+.hero-wallpaper.is-ready .hw-poster { opacity: 0; }
+
+/* ---------- 加载态 ---------- */
 .hero-wallpaper.is-loading #baWallpaperCanvas { opacity: 0; }
 #baWallpaperCanvas { opacity: 1; transition: opacity .8s ease; }
 
+/* 状态指示器：不再全屏遮挡（占位图已经在显示画面），缩到右下角 */
 .hw-loading {
   position: absolute;
-  inset: 0;
+  right: 20px;
+  bottom: 20px;
   z-index: 3;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  color: rgba(255, 255, 255, .82);
-  font-size: 14px;
-  letter-spacing: .08em;
-  background: linear-gradient(180deg, #2f3c4f, #1d2735);
+  gap: 10px;
 }
 .hero-wallpaper.is-ready .hw-loading,
 .hero-wallpaper.is-reduced .hw-loading,
 .hero-wallpaper.is-fallback .hw-loading { display: none; }
+/* 失败时仍要露出「加载动态效果」按钮 */
+.hero-wallpaper.is-fallback .hw-loading.is-retryable { display: flex; }
+
+.hw-loading-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: .04em;
+  color: rgba(255, 255, 255, .88);
+  background: rgba(20, 26, 38, .55);
+  border: 1px solid rgba(255, 255, 255, .16);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  animation: hw-pill-in .4s ease .25s forwards;
+}
+@keyframes hw-pill-in { to { opacity: 1; } }
+/* 必须显式声明：.hw-loading-pill 自带 display，会盖掉 [hidden] 的默认样式 */
+.hw-loading-pill[hidden] { display: none; }
+
+.hw-loading-pct {
+  color: #7cc4ff;
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+  text-align: right;
+}
 
 .hw-spinner {
-  width: 34px; height: 34px;
+  width: 15px; height: 15px;
+  flex: none;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, .22);
   border-top-color: #7cc4ff;
   animation: hw-spin 900ms linear infinite;
 }
 @keyframes hw-spin { to { transform: rotate(360deg); } }
+
+.hw-retry {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .34);
+  background: rgba(20, 26, 38, .62);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: .05em;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.hw-retry:hover { background: rgba(11, 127, 232, .78); border-color: rgba(255, 255, 255, .6); }
+.hw-retry[hidden] { display: none; }
 
 /* 系统开启「减弱动效」或 WebGL 不可用/资源失败时的静态兜底 */
 .hero-wallpaper.is-reduced,

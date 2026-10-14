@@ -6,8 +6,8 @@
   <meta name="description" content="Blue Archive AI Code —— 面向蔚蓝档案玩家的 AI 工具与代码方案。" />
   <title>Blue Archive AI Code</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="wallpaper/wallpaper.css" />
-  <link rel="stylesheet" href="home-scene.css?v=20261011a" />
+  <link rel="stylesheet" href="wallpaper/wallpaper.css?v=20261014a" />
+  <link rel="stylesheet" href="home-scene.css?v=20261014a" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27><rect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230b7fe8%27/><text x=%2732%27 y=%2743%27 font-size=%2726%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27>BA</text></svg>" />
 </head>
 <body>
@@ -84,11 +84,26 @@
 
       <!-- 图层：Spine 壁纸（2K，Scene 1 主视觉，保留交互） -->
       <section class="hero-wallpaper is-loading" id="baHeroWallpaper">
+        <!-- 占位图：首屏立刻可见，Spine 就绪后自动淡出；加载失败时它就是最终画面。
+             横版 89KB / 竖版 37KB —— 竖屏单独出一张，因为画布在竖屏下取景完全不同。 -->
+        <picture>
+          <source media="(max-width: 640px) and (orientation: portrait)"
+                  srcset="wallpaper/CH0335_poster_mobile.webp" />
+          <img class="hw-poster" src="wallpaper/CH0335_poster.webp" alt=""
+               aria-hidden="true" decoding="async" fetchpriority="high" />
+        </picture>
         <canvas id="baWallpaperCanvas"></canvas>
         <canvas id="baWallpaperOverlay"></canvas>
         <div class="hw-scrim-top"></div>
         <div class="hw-scrim-bottom"></div>
-        <div class="hw-loading"><div class="hw-spinner"></div><span>壁纸加载中</span></div>
+        <div class="hw-loading" id="hwLoading">
+          <div class="hw-loading-pill" id="hwLoadingPill">
+            <div class="hw-spinner"></div>
+            <span>动态效果准备中</span>
+            <span class="hw-loading-pct" id="hwLoadingPct"></span>
+          </div>
+          <button type="button" class="hw-retry" id="hwRetry" hidden>加载动态效果</button>
+        </div>
         <div id="baWallpaperTextbox" class="hw-textbox"></div>
       </section>
 
@@ -279,7 +294,7 @@
 
   <script src="script.js"></script>
   <script src="wallpaper/spine-webgl-4.2.js"></script>
-  <script src="wallpaper/wallpaper.js"></script>
+  <script src="wallpaper/wallpaper.js?v=20261014a"></script>
   <audio id="baBgm" src="assets/home/bgm.mp3" loop preload="auto"></audio>
   <script src="home-data.js?v=20261011a"></script>
   <script src="home-scene.js?v=20261011a"></script>

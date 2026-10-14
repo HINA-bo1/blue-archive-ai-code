@@ -1,4 +1,4 @@
-CH0335_home.png
+CH0335_home.webp
 	size: 2048, 2048
 	filter: Linear, Linear
 	scale: 0.7
@@ -510,7 +510,7 @@ ear
 	bounds: 1952, 1000, 94, 144
 	offsets: 5, 5, 104, 153
 
-CH0335_home_2.png
+CH0335_home_2.webp
 	size: 2048, 2048
 	filter: Linear, Linear
 	scale: 0.7
@@ -561,7 +561,7 @@ BG/FX_Diffuse Light_02
 	bounds: 1520, 411, 229, 232
 	offsets: 0, 0, 257, 232
 
-CH0335_home_3.png
+CH0335_home_3.webp
 	size: 2048, 2048
 	filter: Linear, Linear
 	scale: 0.7

@@ -334,8 +334,10 @@
     radial-gradient(ellipse at 50% 74%, rgba(78,168,255,.26), transparent 58%),
     linear-gradient(180deg, #060b18, #0a1326 60%, #14263f);
 }
-/* 兜底时在左下角显示原因提示，避免「背景没了」无法自查 */
-.hero-wallpaper.is-fallback::after {
+/* 兜底时在左下角显示原因提示，避免「背景没了」无法自查。
+   注意：只有确实是 file:// 直接打开才显示 —— 线上（https）失败是别的原因，
+   弹这段「请改用本地 HTTP 服务」会把人带偏。file-protocol 类由 wallpaper.js 添加。 */
+.hero-wallpaper.is-fallback.file-protocol::after {
   content: "动态背景加载失败：当前是通过 file:// 直接打开页面，浏览器会拦截模型资源的跨源请求。请改用本地 HTTP 服务打开 —— 在项目目录执行 python -m http.server 8000，然后访问 http://127.0.0.1:8000/index.html";
   position: fixed; left: 16px; bottom: 16px; z-index: 999;
   max-width: 420px; padding: 10px 14px; border-radius: 10px;

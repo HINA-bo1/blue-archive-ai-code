@@ -12,6 +12,19 @@
 
    已移除：fireworks 烟花（绑定 window 全局点击，会干扰整站）、
            NotoSansJP 字体（5.2MB，改用系统字体）。
+
+   ---- 网页化加载改造（2026-10-14）----
+   原版在 WE 里读本地磁盘，贴图瞬间到位，所以没有任何「等待」设计；
+   搬到网页后一次性要拉 6.5MB，线上带宽只有 25~30KB/s，首访必然超时。
+   现在：
+   1. 贴图 PNG → WebP，5.13MB 压到 0.80MB（省 84%）；atlas 已改指 .webp。
+   2. 首屏先显示 89KB 的横版 / 37KB 的竖版占位图（<picture> 按屏幕切换），
+      Spine 就绪后淡入接管，用户不再看到空白。
+   3. 看门狗 30 秒 → 90 秒（压缩后仍需约 60 秒）。
+   4. 加载失败不再「砸回背景」：占位图保持 + 右下角一个「加载动态效果」
+      按钮可手动重试，重试不会重复绑定事件。
+   5. 预载一遍拿真实进度（AssetManager 没有进度回调），随后 AssetManager
+      直接命中浏览器缓存，不产生重复下载。
    ============================================================= */
 
 (function () {
@@ -52,15 +65,23 @@
   var slotsHidden = false;
   var downaction, upaction, moveaction;
 
-  /* 加载健壮性：失败必须有反馈，不能无限重试静默卡死 */
-  var LOAD_TIMEOUT = 30000;          // 4K 贴图较大，给足 30 秒
-  /* file:// 协议下 XHR 一定被浏览器拦截，等满 30 秒没有意义。
-     这种情况把看门狗缩短，让兜底提示立刻显示，用户一眼就知道该换成 http 打开。 */
+  /* 加载健壮性：失败必须有反馈，不能无限重试静默卡死。
+     线上实测带宽只有 25~30KB/s，贴图转 WebP 后仍需约 1.7MB（≈60 秒），
+     所以看门狗放宽到 90 秒 —— 这段时间占位图保证画面不是空白。 */
+  var LOAD_TIMEOUT = 90000;
+  /* file:// 协议下 XHR 一定被浏览器拦截，等满 90 秒没有意义。
+     这种情况把看门狗缩短，让提示立刻显示，用户一眼就知道该换成 http 打开。 */
   if (location.protocol === 'file:') LOAD_TIMEOUT = 2500;
   var ready = false;
   var assetFailed = false;
   var failReason = '';
   var watchdogId = null;
+
+  /* 占位图 / 状态元素 / 绑定标志 */
+  var loadingEl, loadingPill, pctEl, retryBtn;
+  var preloading = false;
+  var windowBound = false;
+  var canvasBound = false;
 
   function fallback(reason) {
     if (ready) return;
@@ -69,10 +90,89 @@
     if (heroEl) {
       heroEl.classList.remove('is-loading');
       heroEl.classList.add('is-fallback');
+      /* 只有 file:// 打开才是「请改用 HTTP」这个原因，线上失败别套用这段提示 */
+      if (location.protocol === 'file:') heroEl.classList.add('file-protocol');
     }
+    /* 不再「砸回背景」：占位图会一直是最终画面，另给一个手动重试入口 */
+    showRetry();
     failReason = reason || '';
-    console.warn('[BA 壁纸] 已回退到静态背景：' + failReason +
+    console.warn('[BA 壁纸] 动态效果未启用，保持静态占位图：' + failReason +
       '\n请检查以下路径是否可访问：\n  ' + binaryPath() + '\n  ' + atlasPath());
+  }
+
+  function showRetry() {
+    if (loadingEl) loadingEl.classList.add('is-retryable');
+    if (loadingPill) loadingPill.hidden = true;
+    if (pctEl) pctEl.textContent = '';
+    if (retryBtn) retryBtn.hidden = false;
+  }
+
+  /* ---------- 预载 + 真实进度 ----------
+     Spine 的 AssetManager 没有进度回调，所以先用 XHR 自己拉一遍拿准确百分比。
+     这批资源浏览器会缓存，AssetManager 随后的请求直接命中缓存，不会重复下载。 */
+  function setPct(n) { if (pctEl) pctEl.textContent = n + '%'; }
+
+  function measure(urls, onDone) {
+    var stat = {}, left = urls.length;
+    urls.forEach(function (u) { stat[u] = { l: 0, t: 0 }; });
+    if (!left) { onDone(); return; }
+    function report() {
+      var L = 0, T = 0;
+      urls.forEach(function (u) { L += stat[u].l; T += stat[u].t; });
+      if (T > 0) setPct(Math.max(1, Math.min(99, Math.round(L / T * 100))));
+    }
+    function fin() { if (--left <= 0) { setPct(100); onDone(); } }
+    urls.forEach(function (u) {
+      var x = new XMLHttpRequest();
+      try { x.open('GET', u, true); x.responseType = 'arraybuffer'; }
+      catch (e) { fin(); return; }
+      x.onprogress = function (e) {
+        stat[u].l = e.loaded;
+        stat[u].t = e.lengthComputable ? e.total : 0;
+        report();
+      };
+      x.onload = function () {
+        stat[u].l = stat[u].t = (x.response ? x.response.byteLength : 0);
+        report();
+        fin();
+      };
+      x.onerror = x.onabort = x.ontimeout = fin;
+      try { x.send(); } catch (e) { fin(); }
+    });
+  }
+
+  var ATLAS_IMG_RE = /\.(webp|png|jpe?g)$/i;
+
+  function preload(onDone) {
+    if (preloading) return;
+    preloading = true;
+    setPct(1);
+    var atlasUrl = atlasPath();
+    var urls = [binaryPath(), atlasUrl];
+    var fired = false;
+    function go() {
+      if (fired) return;
+      fired = true;
+      measure(urls, function () { preloading = false; onDone(); });
+    }
+    /* 先从 atlas 文本里读出贴图文件名，才能把它们一起算进进度分母 */
+    var x = new XMLHttpRequest();
+    try { x.open('GET', atlasUrl, true); } catch (e) { go(); return; }
+    x.onload = function () {
+      try {
+        (x.responseText || '').split('\n').forEach(function (line) {
+          line = line.replace(/\r$/, '').trim();
+          /* 贴图行是纯文件名；所有属性行都带冒号，据此排除 */
+          if (line && line.indexOf(':') === -1 && ATLAS_IMG_RE.test(line)) {
+            urls.push(WP + modelResolution + '/' + line);
+          }
+        });
+      } catch (e) { }
+      go();
+    };
+    /* atlas 拿不到就退化成「只预载已知两个文件」，绝不阻塞主流程 */
+    x.onerror = x.onabort = x.ontimeout = go;
+    try { x.send(); } catch (e) { go(); }
   }
 
   function assetOk() { }
@@ -302,12 +402,20 @@
     canvas = document.getElementById('baWallpaperCanvas');
     overlay = document.getElementById('baWallpaperOverlay');
     textbox = document.getElementById('baWallpaperTextbox');
+    loadingEl = document.getElementById('hwLoading');
+    loadingPill = document.getElementById('hwLoadingPill');
+    pctEl = document.getElementById('hwLoadingPct');
+    retryBtn = document.getElementById('hwRetry');
     if (!canvas) return;
+    if (retryBtn && !retryBtn.dataset.bound) {
+      retryBtn.dataset.bound = '1';
+      retryBtn.addEventListener('click', retry);
+    }
 
     /* 加载文案跟随贴图分辨率，避免改了 MODEL_RES 后标签不同步 */
-    var loadingLabel = document.querySelector('.hw-loading span');
+    var loadingLabel = document.querySelector('.hw-loading-pill span');
     if (loadingLabel) {
-      loadingLabel.textContent = '壁纸加载中 · ' + modelResolution.toUpperCase();
+      loadingLabel.textContent = '动态效果准备中 · ' + modelResolution.toUpperCase();
     }
 
     /* ★修复 3：画布尺寸跟随 hero 容器，而非窗口 */
@@ -330,22 +438,47 @@
     batcher = new spine.PolygonBatcher(gl);
     mvp.ortho2d(0, 0, canvas.width - 1, canvas.height - 1);
     skeletonRenderer = new spine.SkeletonRenderer(gl);
-    assetManager = new spine.AssetManager(gl);
+    /* ★修复 2：补上窗口尺寸变化监听（重试时不要重复绑定） */
+    if (!windowBound) {
+      windowBound = true;
+      window.addEventListener('resize', resize);
+      window.addEventListener('orientationchange', function () { setTimeout(resize, 300); });
+    }
 
-    /* 传入错误回调，资源 404 时能立刻感知 */
-    assetManager.loadBinary(binaryPath(), assetOk, assetFail);
-    assetManager.loadTextureAtlas(atlasPath(), assetOk, assetFail);
+    beginLoad();
+  }
 
+  /* 启动（或重启）一次加载：看门狗 → 预载拿进度 → 喂给 AssetManager */
+  function beginLoad() {
     /* 看门狗：无论何种原因迟迟未就绪，都给出明确结果而非永久转圈 */
     watchdogId = setTimeout(function () {
       fallback('加载超时（' + (LOAD_TIMEOUT / 1000) + ' 秒）');
     }, LOAD_TIMEOUT);
 
-    /* ★修复 2：补上窗口尺寸变化监听 */
-    window.addEventListener('resize', resize);
-    window.addEventListener('orientationchange', function () { setTimeout(resize, 300); });
+    preload(function () {
+      if (ready) return;               /* 已超时或已收尾，不再启动 */
+      assetManager = new spine.AssetManager(gl);
+      /* 传入错误回调，资源 404 时能立刻感知 */
+      assetManager.loadBinary(binaryPath(), assetOk, assetFail);
+      assetManager.loadTextureAtlas(atlasPath(), assetOk, assetFail);
+      requestAnimationFrame(load);
+    });
+  }
 
-    requestAnimationFrame(load);
+  /* 用户点「加载动态效果」：重置状态后重来一遍 */
+  function retry() {
+    if (!gl || preloading || !heroEl) return;
+    ready = false;
+    assetFailed = false;
+    failReason = '';
+    if (watchdogId) { clearTimeout(watchdogId); watchdogId = null; }
+    heroEl.classList.remove('is-fallback', 'is-ready', 'file-protocol');
+    heroEl.classList.add('is-loading');
+    if (loadingEl) loadingEl.classList.remove('is-retryable');
+    if (retryBtn) retryBtn.hidden = true;
+    if (loadingPill) loadingPill.hidden = false;
+    setPct(1);
+    beginLoad();
   }
 
   function interactionLoad() {
@@ -353,6 +486,10 @@
     TEye = spineData.skeleton.findBone('Touch_Eye');
     PPointX = TPoint.x; PPointY = TPoint.y;
     EPointX = TEye.x; EPointY = TEye.y;
+
+    /* 点「加载动态效果」会再走到这里一次，事件只绑一次 */
+    if (canvasBound) { acceptingClick = true; return 1; }
+    canvasBound = true;
 
     downaction = canvas.addEventListener('mousedown', function (event) {
       if (isVoicelinePlaying || !acceptingClick) return;
