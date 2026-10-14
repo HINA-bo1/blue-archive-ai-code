@@ -1,6 +1,10 @@
 /* =============================================================
-   Blue Archive 壁纸 hero 样式
+   角色壁纸 hero 样式 · 视频版（2026-10-14）
    作用域：仅 .hero-wallpaper，不影响站内其他区块
+
+   历史：这里原本是 Spine 实时渲染（canvas + spine-webgl）。
+   视频化后画面交给原生 <video>，取景数学（2560x1600 / centerY=900）
+   已经烘焙进视频本身，CSS 只需负责「铺满 + 不拉伸」。
    ============================================================= */
 
 .hero-wallpaper {
@@ -16,25 +20,21 @@
   .hero-wallpaper { min-height: 100svh; }
 }
 
-/* 壁纸画布铺满 hero */
-#baWallpaperCanvas {
+/* 视频铺满 hero。
+   object-position 对齐原画布的视觉锚点：设计高 1600、中心在 Y=900，
+   即纵向 56.25% 处，和 Spine 版完全一致，换过去构图不会跳。 */
+.hw-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  object-position: center 56.25%;
   display: block;
   z-index: 0;
-}
-
-/* 调试用 hitbox 覆盖层（默认不绘制） */
-#baWallpaperOverlay {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
   pointer-events: none;
-  opacity: 0;
+  user-select: none;
+  background: #3d3d3d;            /* 视频解码前不留白 */
 }
 
 /* 顶部极轻压暗，保证固定导航可读 */
@@ -65,7 +65,7 @@
   width: 100%;
   margin: 0 auto;
   padding-bottom: 88px;
-  pointer-events: none;           /* 点击穿透到画布，保留摸头/捏脸交互 */
+  pointer-events: none;
 }
 .hw-hint {
   margin-top: 18px;
@@ -88,148 +88,21 @@
 }
 .hw-inner .page-hero-sub { color: rgba(255, 255, 255, .88); }
 
-/* ---------- 占位图：首屏秒开，Spine 就绪后淡出 ----------
-   取景点对齐画布：设计尺寸 2560×1600，而画布的视觉中心在 Y=900
-   （resize() 里的 centerY），也就是纵向 56.25% 处。 */
-/* 外层 <picture> 不生成盒子，否则会变成 hero 的 flex item 影响布局 */
-.hero-wallpaper picture { display: contents; }
-
-.hw-poster {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 56.25%;
-  z-index: 0;
-  pointer-events: none;
-  user-select: none;
-  opacity: 1;
-  transition: opacity .8s ease;
-}
-.hero-wallpaper.is-ready .hw-poster { opacity: 0; }
-
-/* ---------- 加载态 ---------- */
-.hero-wallpaper.is-loading #baWallpaperCanvas { opacity: 0; }
-#baWallpaperCanvas { opacity: 1; transition: opacity .8s ease; }
-
-/* 状态指示器：不再全屏遮挡（占位图已经在显示画面），缩到右下角 */
-.hw-loading {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.hero-wallpaper.is-ready .hw-loading,
-.hero-wallpaper.is-reduced .hw-loading,
-.hero-wallpaper.is-fallback .hw-loading { display: none; }
-/* 失败时仍要露出「加载动态效果」按钮 */
-.hero-wallpaper.is-fallback .hw-loading.is-retryable { display: flex; }
-
-.hw-loading-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  letter-spacing: .04em;
-  color: rgba(255, 255, 255, .88);
-  background: rgba(20, 26, 38, .55);
-  border: 1px solid rgba(255, 255, 255, .16);
-  backdrop-filter: blur(8px);
-  opacity: 0;
-  animation: hw-pill-in .4s ease .25s forwards;
-}
-@keyframes hw-pill-in { to { opacity: 1; } }
-/* 必须显式声明：.hw-loading-pill 自带 display，会盖掉 [hidden] 的默认样式 */
-.hw-loading-pill[hidden] { display: none; }
-
-.hw-loading-pct {
-  color: #7cc4ff;
-  font-variant-numeric: tabular-nums;
-  min-width: 32px;
-  text-align: right;
-}
-/* 还没拿到百分比时（脚本尚未执行）不要留一段空白 */
-.hw-loading-pct:empty { display: none; }
-
-.hw-spinner {
-  width: 15px; height: 15px;
-  flex: none;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, .22);
-  border-top-color: #7cc4ff;
-  animation: hw-spin 900ms linear infinite;
-}
-@keyframes hw-spin { to { transform: rotate(360deg); } }
-
-.hw-retry {
-  padding: 10px 18px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, .34);
-  background: rgba(20, 26, 38, .62);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  font: inherit;
-  font-size: 13px;
-  letter-spacing: .05em;
-  cursor: pointer;
-  transition: background .2s ease, border-color .2s ease;
-}
-.hw-retry:hover { background: rgba(11, 127, 232, .78); border-color: rgba(255, 255, 255, .6); }
-.hw-retry[hidden] { display: none; }
-
-/* 系统开启「减弱动效」或 WebGL 不可用/资源失败时的静态兜底 */
-.hero-wallpaper.is-reduced,
-.hero-wallpaper.is-fallback {
-  background:
-    radial-gradient(ellipse at 18% 22%, rgba(11, 127, 232, .35), transparent 55%),
-    radial-gradient(ellipse at 80% 70%, rgba(34, 211, 238, .28), transparent 55%),
-    linear-gradient(180deg, #33506e, #22334a);
-}
-/* 关键：兜底态必须把画布整个移除——alpha:false 的 WebGL 画布在未渲染时
-   是不透明纯黑，会盖住下面的兜底渐变，看起来像黑屏死机 */
-.hero-wallpaper.is-reduced #baWallpaperCanvas,
-.hero-wallpaper.is-fallback #baWallpaperCanvas,
-.hero-wallpaper.is-reduced #baWallpaperOverlay,
-.hero-wallpaper.is-fallback #baWallpaperOverlay {
+/* 系统开启「减弱动效」时：不自动播放，退回占位图（视频首帧）
+   —— 静止画面同样是完整构图，不是渐变兜底。 */
+.hero-wallpaper.is-reduced .hw-video {
   display: none;
 }
-
-/* ---------- 语音对话框（沿用原壁纸样式，改用系统字体） ---------- */
-.hw-textbox {
-  position: absolute;
-  left: 10%;
-  bottom: 26%;
-  min-width: 120px;
-  max-width: 400px;
-  padding: 15px 20px;
-  z-index: 4;
-  font-size: 18px;
-  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
-  color: #333;
-  background-color: rgba(255, 255, 255, .90);
-  border-radius: 20px;
-  opacity: 0;
-  transition: opacity .5s;
-  line-height: 1.5;
-  pointer-events: none;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .18));
+.hero-wallpaper.is-reduced {
+  background-image: url("CH0335_poster.webp");
+  background-size: cover;
+  background-position: center 56.25%;
+  background-repeat: no-repeat;
 }
-.hw-textbox::after {
-  content: '';
-  position: absolute;
-  top: 20px;
-  left: -20px;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 6px 20px 6px 0;
-  border-color: transparent;
-  border-right-color: rgba(255, 255, 255, .90);
+@media (max-width: 640px) and (orientation: portrait) {
+  .hero-wallpaper.is-reduced {
+    background-image: url("CH0335_poster_mobile.webp");
+  }
 }
 
 /* ---------- 响应式 ---------- */
@@ -237,7 +110,6 @@
   .hw-inner { padding-bottom: 56px; }
   .hw-inner .page-hero-title { font-size: clamp(26px, 8vw, 38px); }
   .hw-scrim-bottom { height: 40%; }
-  .hw-textbox { left: 6%; bottom: 30%; font-size: 16px; max-width: 76%; }
 }
 
 /* =============================================================

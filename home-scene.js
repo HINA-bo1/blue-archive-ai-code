@@ -10,6 +10,7 @@
   var scene1El = document.getElementById('scene1');
   var scene2El = document.getElementById('scene2');
   var heroEl = document.getElementById('baHeroWallpaper');
+  var heroVideo = document.getElementById('baWallpaperVideo');
   var portalEl = document.getElementById('lyPortal');
   var worldEl = document.getElementById('lyWorld');
   var worldVideo = document.getElementById('worldVideo');
@@ -309,8 +310,11 @@
       if (pe !== heroPE) {
         heroEl.style.pointerEvents = pe;
         heroPE = pe;
-        // 完全透明后停掉 Spine 的 WebGL 绘制，把帧预算让给弧形卡
-        window.__BA_PAUSE_WALLPAPER = (hv <= 0.001);
+        // 完全透明后暂停视频解码，把帧预算让给弧形卡（视频回归时浏览器会自动续播）
+        if (heroVideo) {
+          if (hv <= 0.001) { if (!heroVideo.paused) heroVideo.pause(); }
+          else if (heroVideo.paused) { var pr = heroVideo.play(); if (pr && pr.catch) pr.catch(function () { }); }
+        }
       }
     }
 
@@ -434,6 +438,41 @@
   }
 
   /* 首次交互：点击 / 滚轮 / 触摸 / 按键，任一即触发 */
+  /* ---------- 角色壁纸视频：按屏幕方向选源 ----------
+     <source media> 只在加载那一刻评估一次，手机横竖屏切换不会重新选择，
+     会出现「竖屏时还在放横版视频，被裁掉大半张脸」。这里显式重选一遍。
+     仅在媒体查询真正切换时替换 src，避免每次 resize 都重新下载。 */
+  var heroVideoMode = '';
+  var HERO_MQ = window.matchMedia ? window.matchMedia('(min-width: 641px)') : null;
+  function heroLandscape() {
+    /* 用 innerWidth 兜底：某些环境（截图工具改视口、无头浏览器）不会派发 resize，
+       matchMedia 也可能滞后，直接读 innerWidth 最可靠 */
+    return window.innerWidth >= 641;
+  }
+  function syncHeroVideoSource() {
+    if (!heroVideo) return;
+    var mode = heroLandscape() ? 'land' : 'port';
+    if (mode === heroVideoMode) return;
+    heroVideoMode = mode;
+    var want = heroVideo.getAttribute(mode === 'land' ? 'data-src-land' : 'data-src-port');
+    if (!want || (heroVideo.currentSrc || '').indexOf(want) !== -1) return;
+    var wasPlaying = !heroVideo.paused;
+    heroVideo.src = want;
+    heroVideo.load();
+    if (wasPlaying || heroVideo.autoplay) {
+      var p = heroVideo.play(); if (p && p.catch) p.catch(function () { });
+    }
+  }
+  syncHeroVideoSource();
+  window.addEventListener('resize', syncHeroVideoSource);
+  window.addEventListener('orientationchange', function () { setTimeout(syncHeroVideoSource, 200); });
+  /* matchMedia 变化事件：比 resize 更早更准，横竖屏切换必备 */
+  if (HERO_MQ) {
+    var onMq = function () { syncHeroVideoSource(); };
+    if (HERO_MQ.addEventListener) HERO_MQ.addEventListener('change', onMq);
+    else if (HERO_MQ.addListener) HERO_MQ.addListener(onMq);
+  }
+
   function onFirstGesture(e) {
     if (started) return;
     /* 若首次手势来自音乐开关本身，交给按钮自己的点击逻辑处理，

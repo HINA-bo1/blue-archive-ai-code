@@ -6,8 +6,8 @@
   <meta name="description" content="Blue Archive AI Code —— 面向蔚蓝档案玩家的 AI 工具与代码方案。" />
   <title>Blue Archive AI Code</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="wallpaper/wallpaper.css?v=20261014a" />
-  <link rel="stylesheet" href="home-scene.css?v=20261014a" />
+  <link rel="stylesheet" href="wallpaper/wallpaper.css?v=20261014b" />
+  <link rel="stylesheet" href="home-scene.css?v=20261014b" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27><rect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230b7fe8%27/><text x=%2732%27 y=%2743%27 font-size=%2726%27 font-weight=%27bold%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27Arial%27>BA</text></svg>" />
 </head>
 <body>
@@ -82,29 +82,21 @@
         </svg>
       </div>
 
-      <!-- 图层：Spine 壁纸（2K，Scene 1 主视觉，保留交互） -->
+      <!-- 图层：角色壁纸（Scene 1 主视觉·视频版）
+           视频源为 CH0335（凯伊）待机动画的一个完整循环（13.33 秒，首尾帧一致，无缝循环）。
+           横版 1920x1200 / 1.7MB，竖版 720x1560 / 1.0MB，用 <source media> 按屏幕切换。
+           poster 是视频首帧，供视频解码前兜底显示 —— 不再有「加载中」。
+           想换回 Spine 交互版：把 <video> 换回 <canvas id="baWallpaperCanvas"> 并恢复 wallpaper.js 即可。 -->
       <section class="hero-wallpaper is-loading" id="baHeroWallpaper">
-        <!-- 占位图：首屏立刻可见，Spine 就绪后自动淡出；加载失败时它就是最终画面。
-             横版 89KB / 竖版 37KB —— 竖屏单独出一张，因为画布在竖屏下取景完全不同。 -->
-        <picture>
-          <source media="(max-width: 640px) and (orientation: portrait)"
-                  srcset="wallpaper/CH0335_poster_mobile.webp" />
-          <img class="hw-poster" src="wallpaper/CH0335_poster.webp" alt=""
-               aria-hidden="true" decoding="async" fetchpriority="high" />
-        </picture>
-        <canvas id="baWallpaperCanvas"></canvas>
-        <canvas id="baWallpaperOverlay"></canvas>
+        <video class="hw-video" id="baWallpaperVideo" muted loop playsinline autoplay
+               preload="auto" aria-hidden="true"
+               poster="wallpaper/CH0335_poster.webp"
+               data-src-land="wallpaper/CH0335_hero.mp4"
+               data-src-port="wallpaper/CH0335_hero_mobile.mp4"
+               src="wallpaper/CH0335_hero.mp4">
+        </video>
         <div class="hw-scrim-top"></div>
         <div class="hw-scrim-bottom"></div>
-        <div class="hw-loading" id="hwLoading">
-          <div class="hw-loading-pill" id="hwLoadingPill">
-            <div class="hw-spinner"></div>
-            <span>动态效果准备中</span>
-            <span class="hw-loading-pct" id="hwLoadingPct"></span>
-          </div>
-          <button type="button" class="hw-retry" id="hwRetry" hidden>加载动态效果</button>
-        </div>
-        <div id="baWallpaperTextbox" class="hw-textbox"></div>
       </section>
 
       <!-- 图层 3：穿越门（门芯透出那片天空 + 十字星光） -->
@@ -293,10 +285,10 @@
   </footer>
 
   <script src="script.js"></script>
-  <script src="wallpaper/spine-webgl-4.2.js"></script>
-  <script src="wallpaper/wallpaper.js?v=20261014a"></script>
+  <!-- 角色壁纸改造为视频版（2026-10-14）：不再需要 spine-webgl 运行时与 wallpaper.js。
+       <video id="baWallpaperVideo"> 由 CSS 自适应铺满，播放由浏览器原生负责。 -->
   <audio id="baBgm" src="assets/home/bgm.mp3" loop preload="auto"></audio>
   <script src="home-data.js?v=20261011a"></script>
-  <script src="home-scene.js?v=20261011a"></script>
+  <script src="home-scene.js?v=20261014b"></script>
 </body>
 </html>

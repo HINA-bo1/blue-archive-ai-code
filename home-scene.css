@@ -312,7 +312,7 @@
 .ly-curtain-r::after { left: 0; }
 .ly-curtain.is-open { transition: transform 1.8s cubic-bezier(.16,1,.3,1); }
 
-/* ---------- Spine 壁纸层：作为 Scene 1 主视觉嵌进舞台 ---------- */
+/* ---------- 角色壁纸层：作为 Scene 1 主视觉嵌进舞台（视频版 2026-10-14） ---------- */
 /* wallpaper.css 里是满屏 hero（min-height:100vh + 文档流），这里改写成舞台内图层 */
 .hero-wallpaper {
   position: absolute; inset: 0; z-index: 5;
@@ -322,29 +322,10 @@
   will-change: opacity, transform;
   backface-visibility: hidden;
 }
-/* 交互事件绑在渲染画布上：只有它放行鼠标/触摸；
-   顶层 overlay 画布必须保持穿透，否则会吃掉全部事件导致热区失效 */
-.hero-wallpaper #baWallpaperCanvas { pointer-events: auto; }
-.hero-wallpaper #baWallpaperOverlay { pointer-events: none; }
-.hero-wallpaper.is-fallback #baWallpaperCanvas,
-.hero-wallpaper.is-reduced #baWallpaperCanvas { display: none; }
-/* 兜底时露出星空渐变，而不是 alpha:false 画布那块不透明纯黑 */
-.hero-wallpaper.is-fallback {
-  background:
-    radial-gradient(ellipse at 50% 74%, rgba(78,168,255,.26), transparent 58%),
-    linear-gradient(180deg, #060b18, #0a1326 60%, #14263f);
-}
-/* 兜底时在左下角显示原因提示，避免「背景没了」无法自查。
-   注意：只有确实是 file:// 直接打开才显示 —— 线上（https）失败是别的原因，
-   弹这段「请改用本地 HTTP 服务」会把人带偏。file-protocol 类由 wallpaper.js 添加。 */
-.hero-wallpaper.is-fallback.file-protocol::after {
-  content: "动态背景加载失败：当前是通过 file:// 直接打开页面，浏览器会拦截模型资源的跨源请求。请改用本地 HTTP 服务打开 —— 在项目目录执行 python -m http.server 8000，然后访问 http://127.0.0.1:8000/index.html";
-  position: fixed; left: 16px; bottom: 16px; z-index: 999;
-  max-width: 420px; padding: 10px 14px; border-radius: 10px;
-  background: rgba(6,11,24,.82); border: 1px solid rgba(255,170,90,.45);
-  color: #ffd9a8; font-size: 12.5px; line-height: 1.6;
-  pointer-events: none;
-}
+/* 视频版没有交互热区，整层保持穿透，让滚动/点击正常落到舞台 */
+.hero-wallpaper .hw-video { pointer-events: none; }
+/* 「减弱动效」时不放视频，退回占位图（wallpaper.css 已配好背景） */
+.hero-wallpaper.is-reduced .hw-video { display: none; }
 
 /* ---------- Scene 1 UI ---------- */
 .scene1 { position: absolute; inset: 0; z-index: 20; }
