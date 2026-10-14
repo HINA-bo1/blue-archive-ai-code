@@ -154,6 +154,8 @@
   min-width: 32px;
   text-align: right;
 }
+/* 还没拿到百分比时（脚本尚未执行）不要留一段空白 */
+.hw-loading-pct:empty { display: none; }
 
 .hw-spinner {
   width: 15px; height: 15px;
